@@ -44,8 +44,6 @@ conf/
 webapps/
 
 # MySQL 연결 정보
-*.sql
-!schema.sql #schema만 공유
 *.db
 *.db-journal
 # 민감한 설정 파일들 (예: database 연결 정보가 담긴 파일)
