@@ -1,24 +1,27 @@
 package crawler;
 
 import java.util.List;
+import java.util.Set;
 
-import model.ProblemDto;
+import model.dto.ProblemDto;
+import model.dto.QueryDto;
 
 public interface Crawler {
 	/**
-	 * 해당 사용자가 푼 문제를 List<Integer>로 반환한다
-	 * @param handle
+	 * 해당 사용자가 푼 문제를 List<Integer>로 반환한다.
+	 * @param handles
 	 * @return 해결한 문제 List
 	 */
-	List<Integer> getSolvedProblemsByHandle(String handle);
+	Set<Integer> getSolvedProblemsByHandle(List<String> handles);
 	
 	/**
-	 * solved.ac에서 문제 목록을 검색하고 검색된 문제들을 Problems에 최신화한 다음 preQueried 테이블과 Candidates 테이블에 삽입한다.
-	 * @param query
+	 * solved.ac에서 문제 목록을 검색하고 검색된 문제들을 반환한다.
+	 * 이 때 query는 page= 까지만 작성한다
+	 * @param query string
+	 * @return 크롤링된 problem Dto list
 	 */
-	void getProblemsByQuery(String query);
+	List<ProblemDto> executeQuery(String query);
 	
-	void updateCandidates();
 	
 	//TODO : 라이브 코딩 트래킹 메소드
 }
