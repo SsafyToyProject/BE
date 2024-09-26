@@ -7,6 +7,7 @@ public class QueryDto {
 	private int query_id;
 	private String title;
 	private String query_str;
+	private int num_problems;
 	private List<ProblemDto> candidates;
 	public int getQuery_id() {
 		return query_id;
@@ -32,4 +33,11 @@ public class QueryDto {
 	public void setCandidates(List<ProblemDto> candidates) {
 		this.candidates = candidates;
 	}
+	public int getNum_problems() {
+		return num_problems;
+	}
+	public void setNum_problems(int num_problems) {
+		this.num_problems = num_problems;
+	}
+	
 }
