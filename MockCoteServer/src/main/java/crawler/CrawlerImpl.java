@@ -33,7 +33,7 @@ public class CrawlerImpl implements Crawler {
 
 	static Crawler instance = new CrawlerImpl();
 
-	static Crawler getInstance() {
+	public static Crawler getInstance() {
 		return instance;
 	}
 
