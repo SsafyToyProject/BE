@@ -6,9 +6,9 @@ import model.dto.ProblemDto;
 import model.dto.QueryDto;
 
 /**
- * problems, queries, candidates 를 관리하는 DAO
+ * problem crawling에 필요한 DAO
  */
-public interface ProblemDao {
+public interface ProblemQueryDao {
 	
 	/**
 	 * 미리 등록된 쿼리 들을 전부 반환한다. 반환값에 문제 목록은 포함하지 않는다.
