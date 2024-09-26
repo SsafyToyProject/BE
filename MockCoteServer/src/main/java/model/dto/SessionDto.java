@@ -1,11 +1,18 @@
 package model.dto;
 
+import java.util.List;
+
 public class SessionDto {
 	private int session_id; 
 	private int study_id; 
 	private String start_at;
 	private String end_at;
 	
+	private List<UserDto> sessionParticipant;
+	private List<ProblemDto> sessionProblem;
+	
+	
+
 	/**
 	 * 
 	 * @param session_id 라이브코딩 세션 고유 ID
@@ -20,6 +27,8 @@ public class SessionDto {
 		this.start_at = start_at;
 		this.end_at = end_at;
 	}
+	
+	
 	
 	public int getSession_id() {
 		return session_id;
@@ -46,6 +55,28 @@ public class SessionDto {
 		this.end_at = end_at;
 	}
 	
-	
+	public List<UserDto> getSessionParticipant() {
+		return sessionParticipant;
+	}
+
+
+
+	public void setSessionParticipant(List<UserDto> sessionParticipant) {
+		this.sessionParticipant = sessionParticipant;
+	}
+
+
+
+	public List<ProblemDto> getSessionProblem() {
+		return sessionProblem;
+	}
+
+
+
+	public void setSessionProblem(List<ProblemDto> sessionProblem) {
+		this.sessionProblem = sessionProblem;
+	}
+
+
 
 }
