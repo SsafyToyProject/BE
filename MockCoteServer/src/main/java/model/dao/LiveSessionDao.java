@@ -23,7 +23,8 @@ public interface LiveSessionDao {
 	List<SessionTrackerDto> getTrackersBySessionId(int session_id);
 	
 	/**
-	 * 새로운 세션을 추가하고, 모든 구성원과 문제들에 대해 tracker를 추가합니다.
+	 * 새로운 session, session_problems, session_participants을 추가하고,
+	 * 모든 구성원과 문제들에 대해 tracker를 추가합니다.
 	 * @param dto 세션 생성 관련 정보 (session_id 제외)
 	 */
 	void addSession(SessionDto dto);
@@ -34,4 +35,13 @@ public interface LiveSessionDao {
 	 * @param dto 업데이트할 새로운 dto
 	 */
 	void updateTracker(SessionTrackerDto dto);
+	
+	/**
+	 * Session Tracker Dto 하나를 반환합니다.
+	 * @param session_id
+	 * @param user_id
+	 * @param problem_id
+	 * @return 해당하는 tracker dto
+	 */
+	SessionTrackerDto getTrackerDto(int session_id,int user_id,int problem_id);
 }

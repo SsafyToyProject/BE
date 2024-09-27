@@ -1,12 +1,13 @@
 package model.dto;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public class SessionDto {
 	private int session_id; 
 	private int study_id; 
-	private String start_at;
-	private String end_at;
+	private Timestamp start_at;
+	private Timestamp end_at;
 	
 	private List<UserDto> sessionParticipant;
 	private List<ProblemDto> sessionProblem;
@@ -20,7 +21,7 @@ public class SessionDto {
 	 * @param start_at 라이브코딩 시작 시간
 	 * @param end_at 라이브코딩 끝나는 시간
 	 */
-	public SessionDto(int session_id, int study_id, String start_at, String end_at) {
+	public SessionDto(int session_id, int study_id, Timestamp start_at, Timestamp end_at) {
 		super();
 		this.session_id = session_id;
 		this.study_id = study_id;
@@ -42,16 +43,16 @@ public class SessionDto {
 	public void setStudy_id(int study_id) {
 		this.study_id = study_id;
 	}
-	public String getStart_at() {
+	public Timestamp getStart_at() {
 		return start_at;
 	}
-	public void setStart_at(String start_at) {
+	public void setStart_at(Timestamp start_at) {
 		this.start_at = start_at;
 	}
-	public String getEnd_at() {
+	public Timestamp getEnd_at() {
 		return end_at;
 	}
-	public void setEnd_at(String end_at) {
+	public void setEnd_at(Timestamp end_at) {
 		this.end_at = end_at;
 	}
 	

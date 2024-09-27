@@ -1,6 +1,7 @@
 package crawler;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -153,7 +154,7 @@ public class CrawlerImpl implements Crawler {
 						for(UserDto user : session.getSessionParticipant()) {
 							if(rec.handle.equals(user.getHandle())) {
 								SessionTrackerDto dto = new SessionTrackerDto(session.getSession_id(), user.getUser_id(),
-										problem.getProblem_id(), "", rec.performance,
+										problem.getProblem_id(),  new Timestamp(System.currentTimeMillis()), rec.performance,
 										rec.language, rec.submission_id+"", "");
 								LiveSessionDaoImpl.getInstance().updateTracker(dto);
 								break;
