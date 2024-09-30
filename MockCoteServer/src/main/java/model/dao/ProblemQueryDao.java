@@ -1,5 +1,5 @@
 package model.dao;
-
+//deprecated
 import java.util.List;
 
 import model.dto.ProblemDto;
@@ -13,9 +13,9 @@ public interface ProblemQueryDao {
 	/**
 	 * 미리 등록된 쿼리 들을 전부 반환한다. 반환값에 문제 목록은 포함하지 않는다.
 	 * @return candidates가 포함되지 않는 QueryDto의 List
+	
 	 */
 	List<QueryDto> searchAllPresetQueries();
-	
 	/**
 	 * query_id에 맞는 QueryDto를 반환한다. 반환값에 문제 목록이 포함된다.
 	 * @param query_id query_id

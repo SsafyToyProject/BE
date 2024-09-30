@@ -14,7 +14,6 @@ public class ProblemQueryDaoImpl implements ProblemQueryDao {
 	
 	@Override
 	public List<QueryDto> searchAllPresetQueries() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
