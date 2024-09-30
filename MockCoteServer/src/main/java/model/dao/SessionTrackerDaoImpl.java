@@ -38,8 +38,9 @@ public class SessionTrackerDaoImpl implements SessionTrackerDao {
     }
 
     @Override
-    public SessionTrackerDto getSessionTrackerById(int sessionId, int userId) throws SQLException {
-        String sql = "SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description FROM session_tracker WHERE session_id = ? AND user_id = ?";
+    public SessionTrackerDto getSessionTrackerById(int sessionId, int userId, int problemId) throws SQLException {
+        String sql = "SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description " +
+                     "FROM session_tracker WHERE session_id = ? AND user_id = ? AND problem_id = ?";
         SessionTrackerDto tracker = null;
 
         try (Connection conn = DBUtil.getConnection();
@@ -47,6 +48,8 @@ public class SessionTrackerDaoImpl implements SessionTrackerDao {
 
             ps.setInt(1, sessionId);
             ps.setInt(2, userId);
+            ps.setInt(3, problemId);
+
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     tracker = new SessionTrackerDto(
