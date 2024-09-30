@@ -28,14 +28,7 @@ public interface SessionDao {
      * @throws SQLException 데이터베이스 오류 발생 시 예외 처리
      */
     boolean insertSession(SessionDto session) throws SQLException;
-    
-    /**
-     * 기존 세션 정보를 업데이트하는 메서드
-     * @param session 업데이트할 세션 정보를 담은 SessionDto 객체
-     * @return 업데이트 성공 여부 (true: 성공, false: 실패)
-     * @throws SQLException 데이터베이스 오류 발생 시 예외 처리
-     */
-    boolean updateSession(SessionDto session) throws SQLException;
+
     
     /**
      * 특정 세션 ID에 해당하는 세션 정보를 삭제하는 메서드
@@ -44,4 +37,29 @@ public interface SessionDao {
      * @throws SQLException 데이터베이스 오류 발생 시 예외 처리
      */
     boolean deleteSession(int sessionId) throws SQLException;
+    
+    /**
+     * 현재 진행중인 세션의 정보들을 반환한다.
+     * @return 현재 진행 상태의 세션 리스트
+     * @throws SQLException 데이터베이스 오류 발생 시 예외 처리
+     */
+    List<SessionDto> getActiveSessions() throws SQLException;
+    
+    /**
+     * 세션에 참가자를 추가하는 메서드
+     * @param sessionId 세션 ID
+     * @param userId 참가자 ID
+     * @return 삽입 성공 여부 (true: 성공, false: 실패)
+     * @throws SQLException 데이터베이스 오류 발생 시 예외 처리
+     */
+    boolean insertParticipant(int sessionId, int userId) throws SQLException;
+    
+    /**
+     * 세션에 문제를 추가하는 메서드
+     * @param sessionId 세션 ID
+     * @param problemId 문제 ID
+     * @return 삽입 성공 여부 (true: 성공, false: 실패)
+     * @throws SQLException 데이터베이스 오류 발생 시 예외 처리
+     */
+    boolean insertProblem(int sessionId, int problemId) throws SQLException;
 }
