@@ -17,12 +17,12 @@ public interface UserDao {
 	 */
 	UserDto addUser(UserDto userDto);
 	
-//	/**
-//	 * 회원 아이디 찾기
-//	 * @param 회원을 찾기 위한 이름 정보
-//	 * @return 입력된 정보의 회원 정보 객체
-//	 */ 
-//	UserDto searchUserHandle(String handle);
+	/**
+	 * 회원 handle 찾기
+	 * @param 회원을 찾기 위한 user_id
+	 * @return 입력된 정보의 회원 정보 객체
+	 */ 
+	UserDto searchUserHandle(String user_id);
 	
 	/**
 	 * 회원 비밀번호 찾기
