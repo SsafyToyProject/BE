@@ -13,70 +13,98 @@ import util.DBUtil;
 
 public class SessionTrackerDaoImpl implements SessionTrackerDao {
 
-    @Override
-    public SessionTrackerDto getSessionTrackerById(int sessionId, int userId, int problemId) throws SQLException {
-        String sql = "SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description " +
-                     "FROM session_tracker WHERE session_id = ? AND user_id = ? AND problem_id = ?";
-        SessionTrackerDto tracker = null;
+	@Override
+	public SessionTrackerDto getSessionTrackerById(int sessionId, int userId, int problemId) {
+	    String sql = "SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description " +
+	                 "FROM session_tracker WHERE session_id = ? AND user_id = ? AND problem_id = ?";
+	    SessionTrackerDto tracker = null;
+	    Connection conn = null;
+	    PreparedStatement ps = null;
+	    ResultSet rs = null;
 
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+	    try {
+	        conn = DBUtil.getConnection();
+	        ps = conn.prepareStatement(sql);
+	        ps.setInt(1, sessionId);
+	        ps.setInt(2, userId);
+	        ps.setInt(3, problemId);
 
-            ps.setInt(1, sessionId);
-            ps.setInt(2, userId);
-            ps.setInt(3, problemId);
+	        rs = ps.executeQuery();
+	        if (rs.next()) {
+	            tracker = new SessionTrackerDto(
+	                rs.getInt("session_id"),
+	                rs.getInt("user_id"),
+	                rs.getInt("problem_id"),
+	                rs.getTimestamp("solved_at"),
+	                rs.getInt("performance"),
+	                rs.getString("language"),
+	                rs.getString("code_link"),
+	                rs.getString("description")
+	            );
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        DBUtil.close(rs, ps, conn);
+	    }
 
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    tracker = new SessionTrackerDto(
-                        rs.getInt("session_id"),
-                        rs.getInt("user_id"),
-                        rs.getInt("problem_id"),
-                        rs.getTimestamp("solved_at"),
-                        rs.getInt("performance"),
-                        rs.getString("language"),
-                        rs.getString("code_link"),
-                        rs.getString("description")
-                    );
-                }
-            }
-        }
-        return tracker;
-    }
+	    return tracker;
+	}
 
-    @Override
-    public boolean insertSessionTracker(int sessionId, int userId, int problemId) throws SQLException {
-        // 나머지 필드들을 null로 설정하여 삽입
+
+	@Override
+    public boolean insertSessionTracker(int sessionId, int userId, int problemId) {
         String sql = "INSERT INTO session_tracker (session_id, user_id, problem_id, solved_at, performance, language, code_link, description) " +
                      "VALUES (?, ?, ?, NULL, NULL, NULL, NULL, NULL)";
 
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
 
             ps.setInt(1, sessionId);
             ps.setInt(2, userId);
             ps.setInt(3, problemId);
 
             return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(ps, conn);
         }
+
+        return false;
     }
 
 
-    @Override
-    public boolean deleteSessionTracker(int sessionId, int userId) throws SQLException {
+	@Override
+    public boolean deleteSessionTracker(int sessionId, int userId) {
         String sql = "DELETE FROM session_tracker WHERE session_id = ? AND user_id = ?";
 
-        try (Connection conn = DBUtil.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
 
             ps.setInt(1, sessionId);
             ps.setInt(2, userId);
+
             return ps.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(ps, conn);
         }
+
+        return false;
     }
     
     
-	public void updateSessionTracker(SessionTrackerDto dto) throws SQLException{
+	public void updateSessionTracker(SessionTrackerDto dto){
 		//존재하지 않으면 update하고, 존재할경우 performance가 더 낮을 때 update
 		
 		//업데이트가 필요한지 확인하기 위해 기존 dto 받기
