@@ -1,10 +1,12 @@
 package model.dto;
 
+import java.sql.Timestamp;
+
 public class SessionTrackerDto {
 	private int session_id;
 	private int user_id;
 	private int problem_id;
-	private String solved_at;
+	private Timestamp solved_at;
 	private int performance;
 	private String language;
 	private String code_link;
@@ -21,7 +23,7 @@ public class SessionTrackerDto {
 	 * @param code_link 문제 코드 백준 링크
 	 * @param description 문제 설명/요약
 	 */
-	public SessionTrackerDto(int session_id, int user_id, int problem_id, String solved_at, int performance,
+	public SessionTrackerDto(int session_id, int user_id, int problem_id, Timestamp solved_at, int performance,
 			String language, String code_link, String description) {
 		super();
 		this.session_id = session_id;
@@ -52,10 +54,10 @@ public class SessionTrackerDto {
 	public void setProblem_id(int problem_id) {
 		this.problem_id = problem_id;
 	}
-	public String getSolved_at() {
+	public Timestamp getSolved_at() {
 		return solved_at;
 	}
-	public void setSolved_at(String solved_at) {
+	public void setSolved_at(Timestamp solved_at) {
 		this.solved_at = solved_at;
 	}
 	public int getPerformance() {
