@@ -7,7 +7,7 @@ import model.dto.QueryDto;
 public interface QueryDao {
 	
 	/**
-	 * 쿼리 객체를 DB에 삽입합니다.
+	 * 쿼리 객체를 DB에 삽입합니다. candidates에도 같이 삽입합니다.
 	 * @param query
 	 */
 	void insertQuery(QueryDto query);
