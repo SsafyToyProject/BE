@@ -52,10 +52,13 @@ create table study_members(
 create table sessions(
 	session_id int auto_increment,
     study_id int,
+    query_id int,
     start_at timestamp,
     end_at timestamp,
+    problem_pool varchar(100),
     primary key (session_id),
-    foreign key (study_id) references studies(study_id)
+    foreign key (study_id) references studies(study_id),
+    foreign key (query_id) references queries(query_id)
 );
 
 create table session_participants (

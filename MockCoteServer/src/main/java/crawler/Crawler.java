@@ -22,6 +22,9 @@ public interface Crawler {
 	 */
 	List<ProblemDto> executeQuery(String query);
 	
-	
-	//TODO : 라이브 코딩 트래킹 메소드
+	/**
+	 * 활성화된 세션들에 대해 tracker 정보를 크롤링하고 DB에 업데이트한다.
+	 * servlet context listener가 주기적으로 호출한다.
+	 */
+	void liveTrack();
 }
