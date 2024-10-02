@@ -13,7 +13,8 @@ import util.DBUtil;
 public class QueryDaoImpl implements QueryDao {
 
 	@Override
-	public void insertQuery(QueryDto query) {
+	public int insertQuery(QueryDto query) {
+		int ret = 0;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -27,7 +28,7 @@ public class QueryDaoImpl implements QueryDao {
 			pstmt.setString(1, query.getTitle());
 			pstmt.setString(2, query.getQuery_str());
 			pstmt.setInt(3, query.getNum_problems());
-			pstmt.executeUpdate();
+			ret += pstmt.executeUpdate();
 			DBUtil.close(pstmt);
 			
 			//get generated_key
@@ -40,13 +41,14 @@ public class QueryDaoImpl implements QueryDao {
 			pstmt.setInt(1, query_id);
 			for(ProblemDto problem : query.getCandidates()) {
 				pstmt.setInt(2, problem.getProblem_id());
-				pstmt.executeUpdate();
+				ret += pstmt.executeUpdate();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		} finally {
 			DBUtil.close(rs,pstmt,conn);
 		}
+		return ret;
 	}
 
 	@Override

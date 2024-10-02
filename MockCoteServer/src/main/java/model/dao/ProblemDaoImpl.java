@@ -11,7 +11,8 @@ import util.DBUtil;
 public class ProblemDaoImpl implements ProblemDao {
 
 	@Override
-	public void insertProblems(List<ProblemDto> problemList) {
+	public int insertProblems(List<ProblemDto> problemList) {
+		int ret = 0;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = "insert into problems(problem_id,difficulty,title) values(?,?,?) "
@@ -23,17 +24,19 @@ public class ProblemDaoImpl implements ProblemDao {
 				pstmt.setInt(1, problem.getProblem_id());
 				pstmt.setInt(2, problem.getDifficulty());
 				pstmt.setString(3, problem.getTitle());
-				pstmt.executeUpdate();
+				ret+= pstmt.executeUpdate();
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
 			DBUtil.close(pstmt,conn);
 		}
+		return ret;
 	}
 
 	@Override
-	public void updateProblem(ProblemDto problem) {
+	public int updateProblem(ProblemDto problem) {
+		int ret = 0;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		String sql = "update problems set difficulty=?, title=? where problem_id=?";
@@ -43,12 +46,13 @@ public class ProblemDaoImpl implements ProblemDao {
 			pstmt.setInt(1, problem.getProblem_id());
 			pstmt.setInt(2, problem.getDifficulty());
 			pstmt.setString(3, problem.getTitle());
-			pstmt.executeUpdate();
+			ret = pstmt.executeUpdate();
 		} catch(Exception e) {
 			e.printStackTrace();
 		} finally {
 			DBUtil.close(pstmt,conn);
 		}
+		return ret;
 	}
 
 	@Override
