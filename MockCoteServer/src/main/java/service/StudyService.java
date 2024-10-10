@@ -56,4 +56,9 @@ public class StudyService {
     public List<Integer> getUsersByStudyId(int studyId) {
         return studyDao.getUsersByStudyId(studyId);
     }
+    
+ // 사용자가 가입한 스터디 목록을 조회하는 서비스 메서드
+    public List<Integer> getStudiesByUserId(int userId) {
+        return studyDao.getStudiesByUserId(userId);
+    }
 }

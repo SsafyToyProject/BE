@@ -62,4 +62,12 @@ public interface StudyDao {
      * @return StudyDto 객체
      */
     StudyDto getStudyById(int studyId);
+    
+    /**
+     * 사용자가 가입한 스터디 목록을 조회
+     *
+     * @param userId 사용자 ID
+     * @return 가입된 스터디 ID 목록
+     */
+    List<Integer> getStudiesByUserId(int userId);
 }

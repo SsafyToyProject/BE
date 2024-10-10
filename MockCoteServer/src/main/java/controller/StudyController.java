@@ -24,7 +24,11 @@ public class StudyController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getPathInfo();
         if (path != null) {
-            if (path.startsWith("/")) {
+        	 if (path.startsWith("/user/")) {
+                 // GET: /study/user/{user_id}
+                 getUserStudyList(request, response);
+        	 }
+        	 else if (path.startsWith("/")) {
                 // GET: /study/{studyID}
                 getStudyDetail(request, response);
             } else {
@@ -81,6 +85,54 @@ public class StudyController extends HttpServlet {
             out.print(errorResponse.toString());
             out.flush();
         }
+    }
+    
+    // 사용자가 가입한 스터디 ID 목록을 조회하는 메서드
+    private void getUserStudyList(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String pathInfo = request.getPathInfo();
+        String[] pathParts = pathInfo.split("/");
+
+        // 경로 검증
+        if (pathParts.length < 3) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);  // 400 Bad Request
+            return;
+        }
+
+        int userId = -1;
+        try {
+            userId = Integer.parseInt(pathParts[2]);
+        } catch (NumberFormatException e) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);  // 400 Bad Request
+            return;
+        }
+
+        // 서비스 호출하여 사용자가 가입한 스터디 목록 조회
+        List<Integer> userStudyList = studyService.getStudiesByUserId(userId);
+
+        if (userStudyList == null || userStudyList.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);  // 404 Not Found
+            return;
+        }
+
+        // JSON 응답 생성
+        JSONObject responseBody = new JSONObject();
+        responseBody.put("user_id", userId);
+        responseBody.put("num_studies", userStudyList.size());
+
+        JSONArray studyArray = new JSONArray();
+        for (int studyId : userStudyList) {
+            JSONObject studyJson = new JSONObject();
+            studyJson.put("study_id", studyId);
+            studyArray.put(studyJson);
+        }
+        responseBody.put("studies", studyArray);
+
+        // 응답 반환
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        PrintWriter out = response.getWriter();
+        out.print(responseBody.toString());
+        out.flush();
     }
     
  // 스터디 가입 처리 메서드

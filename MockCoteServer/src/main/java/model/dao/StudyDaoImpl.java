@@ -238,5 +238,32 @@ public class StudyDaoImpl implements StudyDao {
 
         return study;
     }
+    
+ // 사용자가 가입한 스터디 목록을 조회
+    @Override
+    public List<Integer> getStudiesByUserId(int userId) {
+        String sql = "SELECT study_id FROM study_members WHERE user_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        List<Integer> studyIds = new ArrayList<>();
+
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                studyIds.add(rs.getInt("study_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(rs, ps, conn);
+        }
+
+        return studyIds;
+    }
 
 }
