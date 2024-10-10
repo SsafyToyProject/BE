@@ -21,6 +21,11 @@ public class UserDto {
 		this.level = level;
 	}
 	
+	public UserDto(int user_id) {
+		super();
+		this.user_id = user_id;
+	}
+	
 	public int getUser_id() {
 		return user_id;
 	}

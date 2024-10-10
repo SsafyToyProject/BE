@@ -29,13 +29,13 @@ public class QueryDaoImpl implements QueryDao {
 			pstmt.setString(2, query.getQuery_str());
 			pstmt.setInt(3, query.getNum_problems());
 			ret += pstmt.executeUpdate();
-			DBUtil.close(pstmt);
 			
 			//get generated_key
 			int query_id = -1;
 			rs = pstmt.getGeneratedKeys();
 			if(rs.next()) query_id = rs.getInt(1);
 			
+			DBUtil.close(pstmt);
 			//insert into candidates
 			pstmt = conn.prepareStatement(sql2);
 			pstmt.setInt(1, query_id);

@@ -19,4 +19,14 @@
     <welcome-file>default.htm</welcome-file>
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
+  <servlet>
+    <description></description>
+    <display-name>SessionController</display-name>
+    <servlet-name>SessionController</servlet-name>
+    <servlet-class>controller.SessionController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>SessionController</servlet-name>
+    <url-pattern>/SessionController</url-pattern>
+  </servlet-mapping>
 </web-app>

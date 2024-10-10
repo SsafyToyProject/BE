@@ -3,6 +3,7 @@ package model.dao;
 import java.sql.SQLException;
 import java.util.List;
 import model.dto.SessionDto;
+import model.dto.UserDto;
 
 public interface SessionDao {
     
@@ -22,9 +23,9 @@ public interface SessionDao {
     /**
      * 새로운 세션 정보를 삽입하는 메서드
      * @param session 삽입할 세션 정보를 담은 SessionDto 객체
-     * @return 삽입 성공 여부 (true: 성공, false: 실패)
+     * @return 생성된 session_id (-1 : fail)
      */
-    boolean insertSession(SessionDto session);
+    int insertSession(SessionDto session);
 
     
     /**
@@ -46,7 +47,7 @@ public interface SessionDao {
      * @param userId 참가자 ID
      * @return 삽입 성공 여부 (true: 성공, false: 실패)
      */
-    boolean insertParticipant(int sessionId, int userId);
+    public boolean insertParticipant(int sessionId, int user_id);
     
     /**
      * 세션에 문제를 추가하는 메서드
