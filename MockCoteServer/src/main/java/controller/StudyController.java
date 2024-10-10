@@ -53,10 +53,15 @@ public class StudyController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getPathInfo();
         if (path != null) {
-            if (path.equals("/register")) {
+            if (path.equals("/register")) { //새로운 스터디 등록
                 // POST: /study/register
                 handleRegisterStudy(request, response);
-            } else {
+            } 
+            else if (path.equals("/signup")) {
+            // POST: /study/signup
+            handleSignupStudy(request, response);  // 스터디 가입 처리
+            }
+            else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 Not Found
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
@@ -72,6 +77,49 @@ public class StudyController extends HttpServlet {
             response.setCharacterEncoding("UTF-8");
             JSONObject errorResponse = new JSONObject();
             errorResponse.put("error", "Missing path information");
+            PrintWriter out = response.getWriter();
+            out.print(errorResponse.toString());
+            out.flush();
+        }
+    }
+    
+ // 스터디 가입 처리 메서드
+    private void handleSignupStudy(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // 요청 본문에서 JSON 데이터 읽기
+        StringBuilder jsonBuffer = new StringBuilder();
+        String line;
+        BufferedReader reader = request.getReader();
+        while ((line = reader.readLine()) != null) {
+            jsonBuffer.append(line);
+        }
+        JSONObject requestBody = new JSONObject(jsonBuffer.toString());
+
+        // 요청 값 추출
+        int userId = requestBody.getInt("user_id");
+        int studyId = requestBody.getInt("study_id");
+
+        // 서비스 호출하여 스터디 가입 처리
+        boolean isSignedUp = studyService.insertStudyMember(studyId, userId);
+
+        if (isSignedUp) {
+            // 가입 성공 시 응답 생성
+            response.setStatus(HttpServletResponse.SC_OK);  // 200 OK
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            JSONObject responseBody = new JSONObject();
+            responseBody.put("user_id", userId);
+            responseBody.put("study_id", studyId);
+
+            PrintWriter out = response.getWriter();
+            out.print(responseBody.toString());
+            out.flush();
+        } else {
+            // 가입 실패 시 응답
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // 500 Internal Server Error
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            JSONObject errorResponse = new JSONObject();
+            errorResponse.put("error", "Failed to signup user to study");
             PrintWriter out = response.getWriter();
             out.print(errorResponse.toString());
             out.flush();
