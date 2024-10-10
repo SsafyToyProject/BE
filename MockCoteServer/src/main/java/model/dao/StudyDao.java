@@ -1,5 +1,7 @@
 package model.dao;
 
+import java.util.List;
+
 import model.dto.StudyDto;
 
 public interface StudyDao {
@@ -35,4 +37,21 @@ public interface StudyDao {
 	 * @return 삭제된 스터디
 	 */
 	StudyDto deleteStudy(String name);
+	
+	/**
+	 * 스터디에 멤버 추가하기
+	 * 
+	 * @param studyId 추가할 스터디의 ID
+	 * @param userId 스터디에 추가할 사용자의 ID
+	 * @return 멤버 추가 성공 여부 (true: 성공, false: 실패)
+	 */
+	public boolean insertStudyMember(int studyId, int userId);
+	
+	/**
+	 * 특정 스터디에 가입된 모든 사용자 ID 가져오기
+	 * 
+	 * @param studyId 사용자 ID를 가져올 스터디의 ID
+	 * @return 스터디에 가입된 모든 사용자의 ID 리스트
+	 */
+	public List<Integer> getUsersByStudyId(int studyId);
 }
