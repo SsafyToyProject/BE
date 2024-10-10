@@ -17,31 +17,6 @@ import util.DBUtil;
  * 크롤링을 위해 필요한 DB 메서드들
  */
 public class CrawlerDao {
-	/**
-	 * 현재 진행중인 세션의 정보들을 반환한다.
-	 * @return 현재 진행 상태의 세션 리스트
-	 */
-	public static List<SessionDto> getActiveSessions() {
-		List<SessionDto> ret = new ArrayList<>();
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		String sql = "select * from sessions where now() between start_at and end_at";
-		try {
-			conn = DBUtil.getConnection();
-			pstmt = conn.prepareStatement(sql);
-			rs = pstmt.executeQuery();
-			while (rs.next()) {
-				ret.add(new SessionDto(rs.getInt("session_id"), rs.getInt("study_id"), rs.getTimestamp("start_at"),
-						rs.getTimestamp("end_at")));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		} finally {
-			DBUtil.close(rs, pstmt, conn);
-		}
-		return ret;
-	}
 	
 	/**
 	 * 크롤러를 위한 sessiontracker 업데이트 메서드.

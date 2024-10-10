@@ -21,6 +21,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import model.dao.SessionDao;
+import model.dao.SessionDaoImpl;
 import model.dto.ProblemDto;
 import model.dto.SessionDto;
 import model.dto.SessionTrackerDto;
@@ -127,10 +129,11 @@ public class CrawlerImpl implements Crawler {
 
 		return ret;
 	}
-
+	
+	static SessionDao sessionDao = new SessionDaoImpl();
 	@Override
 	public void liveTrack() {
-		List<SessionDto> activeSessions = CrawlerDao.getActiveSessions();
+		List<SessionDto> activeSessions = sessionDao.getActiveSessions();
 		for (SessionDto session : activeSessions) {
 			for (ProblemDto problem : session.getSessionProblem()) {
 				String url = "https://www.acmicpc.net/status?problem_id=" + problem.getProblem_id()
