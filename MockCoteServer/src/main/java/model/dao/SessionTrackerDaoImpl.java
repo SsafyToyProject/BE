@@ -13,6 +13,10 @@ import util.DBUtil;
 
 public class SessionTrackerDaoImpl implements SessionTrackerDao {
 
+	private static SessionTrackerDao instance = new SessionTrackerDaoImpl();
+	private SessionTrackerDaoImpl() {}
+	public static SessionTrackerDao getInstance() {return instance;}
+	
 	@Override
 	public SessionTrackerDto getSessionTrackerById(int sessionId, int userId, int problemId) {
 	    String sql = "SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description " +
