@@ -228,5 +228,88 @@ public class SessionDaoImpl implements SessionDao {
 		
 		return cnt; //성공시 1, 실패시 -1 반환
 	}
+	
+	// 특정 studyId로 세션 목록 가져오기
+    @Override
+    public List<SessionDto> getSessionsByStudyId(int studyId) {
+        List<SessionDto> sessions = new ArrayList<>();
+        String sql = "SELECT * FROM sessions WHERE study_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, studyId);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                sessions.add(new SessionDto(rs.getInt("session_id"), rs.getInt("study_id"), rs.getInt("query_id"),
+                        rs.getTimestamp("start_at"), rs.getTimestamp("end_at"), rs.getString("problem_pool")));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(rs, ps, conn);
+        }
+
+        return sessions;
+    }
+    
+ // 세션의 참가자 목록 가져오기
+    @Override
+    public List<Integer> getParticipantsBySessionId(int sessionId) {
+        List<Integer> participants = new ArrayList<>();
+        String sql = "SELECT user_id FROM session_participants WHERE session_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, sessionId);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                participants.add(rs.getInt("user_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(rs, ps, conn);
+        }
+
+        return participants;
+    }
+
+    // 세션의 문제 목록 가져오기
+    @Override
+    public List<Integer> getProblemsBySessionId(int sessionId) {
+        List<Integer> problems = new ArrayList<>();
+        String sql = "SELECT problem_id FROM session_problems WHERE session_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, sessionId);
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                problems.add(rs.getInt("problem_id"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(rs, ps, conn);
+        }
+
+        return problems;
+    }
+	
 
 }

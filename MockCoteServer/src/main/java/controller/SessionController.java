@@ -6,7 +6,9 @@ import java.io.PrintWriter;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import jakarta.servlet.ServletException;
@@ -22,9 +24,92 @@ public class SessionController extends HttpServlet {
 	
 	private SessionService sessionService = SessionService.getInstance();
        
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
+	// 기본 GET 요청 처리
+		protected void doGet(HttpServletRequest request, HttpServletResponse response)
+				throws ServletException, IOException {
+			String path = request.getPathInfo();
+			if (path != null) {
+				if (path.startsWith("/study/")) {
+					// GET: /session/study/{studyID}
+					getSessionsByStudyId(request, response);
+				} else {
+					response.getWriter().append("Served at: ").append(request.getContextPath());
+				}
+			}
+		}
+
+		// 스터디ID를 사용하여 해당 스터디에 속한 세션 정보 가져오기
+		private void getSessionsByStudyId(HttpServletRequest request, HttpServletResponse response) throws IOException {
+			// studyID 추출
+			String pathInfo = request.getPathInfo();
+			String[] pathParts = pathInfo.split("/");
+			if (pathParts.length < 3) {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
+
+			int studyId = -1;
+			try {
+				studyId = Integer.parseInt(pathParts[2]);
+			} catch (NumberFormatException e) {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
+
+			// 해당 스터디에 대한 세션 목록 가져오기
+			List<SessionDto> sessions = sessionService.getSessionsByStudyId(studyId);
+			if (sessions == null || sessions.isEmpty()) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				return;
+			}
+
+			// JSON 응답 생성
+			JSONObject responseBody = new JSONObject();
+			JSONArray sessionArray = new JSONArray();
+
+			for (SessionDto session : sessions) {
+				JSONObject sessionJson = new JSONObject();
+				sessionJson.put("session_id", session.getSession_id());
+				sessionJson.put("query_id", session.getQuery_id());
+				sessionJson.put("start_at", session.getStart_at().toString());
+				sessionJson.put("end_at", session.getEnd_at().toString());
+				sessionJson.put("problem_pool", session.getProblem_pool());
+
+				// 참가자 정보 추가
+				List<Integer> participants = sessionService.getSessionParticipants(session.getSession_id());
+				JSONArray participantsArray = new JSONArray();
+				for (int userId : participants) {
+					JSONObject participantJson = new JSONObject();
+					participantJson.put("user_id", userId);
+					participantsArray.put(participantJson);
+				}
+				sessionJson.put("participants_cnt", participants.size());
+				sessionJson.put("session_participants", participantsArray);
+
+				// 문제 정보 추가
+				List<Integer> problems = sessionService.getSessionProblems(session.getSession_id());
+				JSONArray problemsArray = new JSONArray();
+				for (int problemId : problems) {
+					JSONObject problemJson = new JSONObject();
+					problemJson.put("problem_id", problemId);
+					problemsArray.put(problemJson);
+				}
+				sessionJson.put("problems_cnt", problems.size());
+				sessionJson.put("session_problems", problemsArray);
+
+				sessionArray.put(sessionJson);
+			}
+
+			responseBody.put("num_elements", sessions.size());
+			responseBody.put("sessions", sessionArray);
+
+			// 응답 반환
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			PrintWriter out = response.getWriter();
+			out.print(responseBody.toString());
+			out.flush();
+		}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String path = request.getPathInfo();
