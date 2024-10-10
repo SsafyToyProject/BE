@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -21,9 +22,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import model.dao.QueryDao;
+import model.dao.QueryDaoImpl;
 import model.dao.SessionDao;
 import model.dao.SessionDaoImpl;
+import model.dao.SessionTrackerDao;
+import model.dao.SessionTrackerDaoImpl;
 import model.dto.ProblemDto;
+import model.dto.QueryDto;
 import model.dto.SessionDto;
 import model.dto.SessionTrackerDto;
 import model.dto.UserDto;
@@ -41,6 +47,10 @@ public class CrawlerImpl implements Crawler {
 
 	private CrawlerImpl() {
 	}
+	
+	static SessionDao sessionDao = SessionDaoImpl.getInstance();
+	static SessionTrackerDao sessionTrackerDao = SessionTrackerDaoImpl.getInstance();
+	static QueryDao queryDao = QueryDaoImpl.getInstance();
 
 	// Override functions
 
@@ -130,7 +140,7 @@ public class CrawlerImpl implements Crawler {
 		return ret;
 	}
 	
-	static SessionDao sessionDao = SessionDaoImpl.getInstance();
+	
 	@Override
 	public void liveTrack() {
 		List<SessionDto> activeSessions = sessionDao.getActiveSessions();
@@ -158,7 +168,7 @@ public class CrawlerImpl implements Crawler {
 										user.getUser_id(), problem.getProblem_id(),
 										new Timestamp(System.currentTimeMillis()), rec.performance, rec.language,
 										rec.submission_id + "", "");
-								CrawlerDao.updateTracker(dto);
+								sessionTrackerDao.updateSessionTracker(dto);
 								break;
 							}
 						}
@@ -209,5 +219,70 @@ public class CrawlerImpl implements Crawler {
 		}
 
 		return ret;
+	}
+	
+	@Override
+	public void triggerTrack() {
+		List<SessionDto> sessions = sessionDao.getReadySessions();
+		for(SessionDto session : sessions) {
+			int session_id = session.getSession_id();
+			//session의 문제를 선정해서 session_problems 테이블에 삽입하고, sessionTracker도 삽입한다.
+			
+			//참가자 목록 확인
+			List<Integer> participants_id = sessionDao.getParticipantsById(session_id);
+			List<String> handles = new ArrayList<>();
+			for(int uid : participants_id) {
+				//TODO : UserDao를 활용해서 handles list화 
+			}
+			
+			//쿼리 정보
+			QueryDto query = queryDao.searchById(session.getQuery_id());
+			List<ProblemDto> problems = query.getCandidates();
+			
+			//이미 푼 문제 셋
+			Set<Integer> solved = getSolvedProblemsByHandle(handles);
+			
+			// 안푼 문제 분류
+			List<ProblemDto> unsolved[] = new List[31];
+			for(int i = 1;i <= 30;i++) unsolved[i] = new ArrayList<>();
+			for(ProblemDto pd : problems) {
+				if(!solved.contains(pd.getProblem_id())) {
+					unsolved[pd.getDifficulty()].add(pd);
+				}
+			}
+			
+			//problemPool 파싱
+			List<Integer> pick_difficulties = new ArrayList<>();
+			StringTokenizer st = new StringTokenizer(session.getProblem_pool());
+			while(st.hasMoreTokens()) {
+				int diff=0;
+				String diffi = st.nextToken();
+				switch(diffi.charAt(0)) {
+				case 'B' :
+					break;
+				case 'S' :
+					diff+=5;
+					break;
+				case 'G' :
+					diff+=10;
+					break;
+				case 'P' :
+					diff+=15;
+					break;
+				case 'D' :
+					diff+=20;
+					break;
+				case 'R' :
+					diff+=25;
+					break;
+				}
+				diff += 6-(diffi.charAt(1)-'0');
+				pick_difficulties.add(diff);
+			}
+			
+			//문제 선정
+			//TODO
+			
+		}
 	}
 }

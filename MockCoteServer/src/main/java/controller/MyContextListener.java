@@ -48,6 +48,7 @@ public class MyContextListener implements ServletContextListener {
     // 실제 크롤링 및 세션 업데이트 로직
     private void crawlAndUpdateSessions() {
         System.out.println("Crawling started...");
+        instance.triggerTrack();
         instance.liveTrack();
         System.out.println("Crawling and session update completed.");
     }
