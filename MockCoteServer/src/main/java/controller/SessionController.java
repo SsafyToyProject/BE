@@ -28,30 +28,78 @@ public class SessionController extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String path = request.getPathInfo();
-		if(path != null && path.startsWith("/register")) {
-			//post : /session/register
-			int session_id = parseAndRegisterSession(request, response);
-	        if(session_id == -1) {
-	        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST); //400
-	        } else {
-	        	response.setStatus(HttpServletResponse.SC_CREATED); //201
-	        }
-	        response.setContentType("application/json");
-	        response.setCharacterEncoding("UTF-8");
-	        
-	        //body 생성
-	        JSONObject body = new JSONObject();
-	        body.put("session_id", session_id);
-	        
-	        //response 출력
-	        PrintWriter out = response.getWriter();
-	        out.print(body.toString());
-	        out.flush();
-		} else {
+		if (path != null) {
+			if (path.startsWith("/register")) {
+				//post : /session/register
+				int session_id = parseAndRegisterSession(request, response);
+		        if(session_id == -1) {
+		        	response.setStatus(HttpServletResponse.SC_BAD_REQUEST); //400
+		        } else {
+		        	response.setStatus(HttpServletResponse.SC_CREATED); //201
+		        }
+		        response.setContentType("application/json");
+		        response.setCharacterEncoding("UTF-8");
+		        
+		        //body 생성
+		        JSONObject body = new JSONObject();
+		        body.put("session_id", session_id);
+		        
+		        //response 출력
+		        PrintWriter out = response.getWriter();
+		        out.print(body.toString());
+		        out.flush();
+			}
+			
+			else if (path.startsWith("/participate")) {
+				//post : /session/participate
+				int result = participateInSession(request, response);
+				if (result == -1) {
+					response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+				} else {
+					response.setStatus(HttpServletResponse.SC_OK); // 200
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+
+					// body 생성
+					JSONObject body = new JSONObject();
+					body.put("session_id", request.getParameter("session_id"));
+					body.put("user_id", request.getParameter("user_id"));
+
+					// response 출력
+					PrintWriter out = response.getWriter();
+					out.print(body.toString());
+					out.flush();
+				}
+				
+				
+			}
+		}
+		else {
 			
 		}
+		
 	}
 	
+	private int participateInSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		// request 파싱
+		StringBuilder jsonBuffer = new StringBuilder();
+		String line;
+		BufferedReader reader = request.getReader();
+		while ((line = reader.readLine()) != null) {
+			jsonBuffer.append(line);
+		}
+		
+		// 문자열을 JSONObject로 변환
+		JSONObject jsonObject = new JSONObject(jsonBuffer.toString());
+
+		// session_id와 user_id 추출
+		int sessionId = jsonObject.getInt("session_id");
+		int userId = jsonObject.getInt("user_id");
+		
+		// Service 호출하여 데이터 저장
+		return sessionService.addParticipant(sessionId, userId);
+	}
+
 	private int parseAndRegisterSession (HttpServletRequest request, HttpServletResponse response) throws IOException {
 		StringBuilder jsonBuffer = new StringBuilder();
         String line;

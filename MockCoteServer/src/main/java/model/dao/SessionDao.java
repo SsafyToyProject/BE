@@ -56,4 +56,14 @@ public interface SessionDao {
      * @return 삽입 성공 여부 (true: 성공, false: 실패)
      */
     boolean insertProblem(int sessionId, int problemId);
+    
+    
+    /**
+     * 세션에 참여하는 참가자를 추가하는 메서드
+     * @param user_id 유저ID
+     * @param session_id 세션ID
+     * @return
+     */
+    int addParticipant(int session_id, int user_id);
+    
 }

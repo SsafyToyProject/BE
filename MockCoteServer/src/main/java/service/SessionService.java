@@ -24,4 +24,11 @@ public class SessionService {
 		
 		return session_id;
 	}
+	
+	public int addParticipant(int session_id, int user_id) {
+		// session_participants 테이블에 삽입
+		return sessionDao.addParticipant(session_id, user_id);
+	}
+	
+	
 }

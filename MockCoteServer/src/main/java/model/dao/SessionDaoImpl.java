@@ -201,5 +201,32 @@ public class SessionDaoImpl implements SessionDao {
 
 		return false;
 	}
+	
+	//세션 참여자 추가
+	@Override
+	public int addParticipant(int session_id, int user_id) {
+		String sql = "INSERT INTO session_participants (session_id, user_id) VALUES (?, ?)";
+		Connection conn = null;
+		PreparedStatement ps = null;
+		
+		int cnt = -1;
+		
+		try {
+			conn = DBUtil.getConnection();
+			ps = conn.prepareStatement(sql);
+			
+			ps.setInt(1, session_id);
+			ps.setInt(2, user_id);
+			
+			cnt = ps.executeUpdate();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			DBUtil.close(ps, conn);
+		}
+		
+		return cnt; //성공시 1, 실패시 -1 반환
+	}
 
 }
