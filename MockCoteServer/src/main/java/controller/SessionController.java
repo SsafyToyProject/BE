@@ -33,8 +33,24 @@ public class SessionController extends HttpServlet {
 					// GET: /session/study/{studyID}
 					getSessionsByStudyId(request, response);
 				} else {
-					response.getWriter().append("Served at: ").append(request.getContextPath());
+					response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404
+					response.setContentType("application/json");
+					response.setCharacterEncoding("UTF-8");
+					JSONObject errorResponse = new JSONObject();
+					errorResponse.put("error", "Invalid path");
+					PrintWriter out = response.getWriter();
+					out.print(errorResponse.toString());
+					out.flush();
 				}
+			} else {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST); // 400
+				response.setContentType("application/json");
+				response.setCharacterEncoding("UTF-8");
+				JSONObject errorResponse = new JSONObject();
+				errorResponse.put("error", "Missing path information");
+				PrintWriter out = response.getWriter();
+				out.print(errorResponse.toString());
+				out.flush();
 			}
 		}
 
