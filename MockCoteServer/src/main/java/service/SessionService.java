@@ -9,7 +9,7 @@ public class SessionService {
 	private SessionService() {}
 	public static SessionService getInstance() {return instance;}
 	
-	private SessionDao sessionDao = new SessionDaoImpl();
+	private SessionDao sessionDao = SessionDaoImpl.getInstance();
 	
 	/**
 	 * 

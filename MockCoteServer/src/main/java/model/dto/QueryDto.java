@@ -9,6 +9,15 @@ public class QueryDto {
 	private String query_str;
 	private int num_problems;
 	private List<ProblemDto> candidates;
+	
+	public QueryDto(int query_id, String title, String query_str, int num_problems, List<ProblemDto> candidates) {
+		super();
+		this.query_id = query_id;
+		this.title = title;
+		this.query_str = query_str;
+		this.num_problems = num_problems;
+		this.candidates = candidates;
+	}
 	public int getQuery_id() {
 		return query_id;
 	}

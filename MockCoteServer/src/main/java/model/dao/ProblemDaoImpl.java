@@ -9,7 +9,11 @@ import model.dto.ProblemDto;
 import util.DBUtil;
 
 public class ProblemDaoImpl implements ProblemDao {
-
+	
+	private static ProblemDao instance = new ProblemDaoImpl();
+	private ProblemDaoImpl() {}
+	public static ProblemDao getInstance() {return instance;}
+	
 	@Override
 	public int insertProblems(List<ProblemDto> problemList) {
 		int ret = 0;

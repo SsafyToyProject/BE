@@ -130,7 +130,7 @@ public class CrawlerImpl implements Crawler {
 		return ret;
 	}
 	
-	static SessionDao sessionDao = new SessionDaoImpl();
+	static SessionDao sessionDao = SessionDaoImpl.getInstance();
 	@Override
 	public void liveTrack() {
 		List<SessionDto> activeSessions = sessionDao.getActiveSessions();

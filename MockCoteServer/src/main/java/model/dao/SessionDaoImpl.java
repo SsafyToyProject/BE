@@ -12,6 +12,9 @@ import model.dto.UserDto;
 import util.DBUtil;
 
 public class SessionDaoImpl implements SessionDao {
+	private static SessionDao instance = new SessionDaoImpl();
+	private SessionDaoImpl() {}
+	public static SessionDao getInstance() {return instance;}
 
 	// 모든 세션 가져오기
 	@Override

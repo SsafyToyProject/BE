@@ -29,4 +29,14 @@
     <servlet-name>SessionController</servlet-name>
     <url-pattern>/SessionController</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <description></description>
+    <display-name>CrawlController</display-name>
+    <servlet-name>CrawlController</servlet-name>
+    <servlet-class>controller.CrawlController</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>CrawlController</servlet-name>
+    <url-pattern>/CrawlController</url-pattern>
+  </servlet-mapping>
 </web-app>
