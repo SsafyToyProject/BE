@@ -20,7 +20,7 @@ public class SessionTrackerDaoImpl implements SessionTrackerDao {
 	@Override
 	public SessionTrackerDto getSessionTrackerById(int sessionId, int userId, int problemId) {
 	    String sql = "SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description " +
-	                 "FROM session_tracker WHERE session_id = ? AND user_id = ? AND problem_id = ?";
+	                 "FROM session_trackers WHERE session_id = ? AND user_id = ? AND problem_id = ?";
 	    SessionTrackerDto tracker = null;
 	    Connection conn = null;
 	    PreparedStatement ps = null;
@@ -58,7 +58,7 @@ public class SessionTrackerDaoImpl implements SessionTrackerDao {
 
 	@Override
     public boolean insertSessionTracker(int sessionId, int userId, int problemId) {
-        String sql = "INSERT INTO session_tracker (session_id, user_id, problem_id, solved_at, performance, language, code_link, description) " +
+        String sql = "INSERT INTO session_trackers (session_id, user_id, problem_id, solved_at, performance, language, code_link, description) " +
                      "VALUES (?, ?, ?, NULL, NULL, NULL, NULL, NULL)";
 
         Connection conn = null;
@@ -85,7 +85,7 @@ public class SessionTrackerDaoImpl implements SessionTrackerDao {
 
 	@Override
     public boolean deleteSessionTracker(int sessionId, int userId) {
-        String sql = "DELETE FROM session_tracker WHERE session_id = ? AND user_id = ?";
+        String sql = "DELETE FROM session_trackers WHERE session_id = ? AND user_id = ?";
 
         Connection conn = null;
         PreparedStatement ps = null;
