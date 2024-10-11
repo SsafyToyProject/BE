@@ -5,6 +5,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
@@ -47,7 +48,7 @@ public class CrawlerImpl implements Crawler {
 
 	private CrawlerImpl() {
 	}
-	
+
 	static SessionDao sessionDao = SessionDaoImpl.getInstance();
 	static SessionTrackerDao sessionTrackerDao = SessionTrackerDaoImpl.getInstance();
 	static QueryDao queryDao = QueryDaoImpl.getInstance();
@@ -139,8 +140,7 @@ public class CrawlerImpl implements Crawler {
 
 		return ret;
 	}
-	
-	
+
 	@Override
 	public void liveTrack() {
 		List<SessionDto> activeSessions = sessionDao.getActiveSessions();
@@ -220,69 +220,91 @@ public class CrawlerImpl implements Crawler {
 
 		return ret;
 	}
-	
+
 	@Override
 	public void triggerTrack() {
 		List<SessionDto> sessions = sessionDao.getReadySessions();
-		for(SessionDto session : sessions) {
+		for (SessionDto session : sessions) {
 			int session_id = session.getSession_id();
-			//session의 문제를 선정해서 session_problems 테이블에 삽입하고, sessionTracker도 삽입한다.
-			
-			//참가자 목록 확인
+			// session의 문제를 선정해서 session_problems 테이블에 삽입하고, sessionTracker도 삽입한다.
+
+			// 참가자 목록 확인
 			List<Integer> participants_id = sessionDao.getParticipantsById(session_id);
+			//List<UserDto> participants = new ArrayList<>();
 			List<String> handles = new ArrayList<>();
-			for(int uid : participants_id) {
-				//TODO : UserDao를 활용해서 handles list화 
+			for (int uid : participants_id) {
+				// TODO : UserDao를 활용해서 handles list화
 			}
-			
-			//쿼리 정보
+
+			// 쿼리 정보
 			QueryDto query = queryDao.searchById(session.getQuery_id());
 			List<ProblemDto> problems = query.getCandidates();
-			
-			//이미 푼 문제 셋
+
+			// 이미 푼 문제 셋
 			Set<Integer> solved = getSolvedProblemsByHandle(handles);
-			
+
+			// problemPool 파싱
+			List<Integer> pick_difficulties = new ArrayList<>();
+			StringTokenizer st = new StringTokenizer(session.getProblem_pool());
+			while (st.hasMoreTokens()) {
+				int diff = 0;
+				String diffi = st.nextToken();
+				switch (diffi.charAt(0)) {
+				case 'B':
+					break;
+				case 'S':
+					diff += 5;
+					break;
+				case 'G':
+					diff += 10;
+					break;
+				case 'P':
+					diff += 15;
+					break;
+				case 'D':
+					diff += 20;
+					break;
+				case 'R':
+					diff += 25;
+					break;
+				}
+				diff += 6 - (diffi.charAt(1) - '0');
+				pick_difficulties.add(diff);
+			}
+
 			// 안푼 문제 분류
 			List<ProblemDto> unsolved[] = new List[31];
-			for(int i = 1;i <= 30;i++) unsolved[i] = new ArrayList<>();
-			for(ProblemDto pd : problems) {
-				if(!solved.contains(pd.getProblem_id())) {
+			for (int i : pick_difficulties) if(unsolved[i] == null) unsolved[i] = new ArrayList<>();
+			for (ProblemDto pd : problems) {
+				if(unsolved[pd.getDifficulty()] == null) continue;
+				if (!solved.contains(pd.getProblem_id())) {
 					unsolved[pd.getDifficulty()].add(pd);
 				}
 			}
-			
-			//problemPool 파싱
-			List<Integer> pick_difficulties = new ArrayList<>();
-			StringTokenizer st = new StringTokenizer(session.getProblem_pool());
-			while(st.hasMoreTokens()) {
-				int diff=0;
-				String diffi = st.nextToken();
-				switch(diffi.charAt(0)) {
-				case 'B' :
-					break;
-				case 'S' :
-					diff+=5;
-					break;
-				case 'G' :
-					diff+=10;
-					break;
-				case 'P' :
-					diff+=15;
-					break;
-				case 'D' :
-					diff+=20;
-					break;
-				case 'R' :
-					diff+=25;
-					break;
+
+			// 문제 선정
+			List<ProblemDto> pick_problems = new ArrayList<>();
+			Random random = new Random();
+			for(int diffi : pick_difficulties) {
+				int turn = 0;
+				while(true) {
+					ProblemDto pick = unsolved[diffi].get(random.nextInt(unsolved[diffi].size()));
+					if(!pick_problems.contains(pick)) {
+						pick_problems.add(pick);
+						break;
+					}
+					turn++;
+					if(turn == 500) break; //no data..
 				}
-				diff += 6-(diffi.charAt(1)-'0');
-				pick_difficulties.add(diff);
 			}
 			
-			//문제 선정
-			//TODO
-			
+			// 문제 리스트 와 트래커 등록
+			for(ProblemDto problem : pick_problems) {
+				sessionDao.insertProblem(session_id, problem.getProblem_id());
+				for(int uid : participants_id) {
+					sessionTrackerDao.insertSessionTracker(session_id, uid, problem.getProblem_id());
+				}
+			}
 		}
 	}
 }
