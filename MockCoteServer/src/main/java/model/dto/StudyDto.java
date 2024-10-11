@@ -11,6 +11,14 @@ public class StudyDto {
 	
 	private List<UserDto> studyMambers; //해당 스터디에 참여하는 스터디원 
 	
+	public StudyDto(int study_id, int owner_id, String name, String description, String code) {
+		super();
+		this.study_id = study_id;
+		this.owner_id = owner_id;
+		this.name = name;
+		this.description = description;
+		this.code = code;
+	}
 	public int getStudy_id() {
 		return study_id;
 	}

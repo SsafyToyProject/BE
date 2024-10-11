@@ -56,4 +56,39 @@ public interface SessionDao {
      * @return 삽입 성공 여부 (true: 성공, false: 실패)
      */
     boolean insertProblem(int sessionId, int problemId);
+    
+    
+    /**
+     * 세션에 참여하는 참가자를 추가하는 메서드
+     * @param user_id 유저ID
+     * @param session_id 세션ID
+     * @return
+     */
+    int addParticipant(int session_id, int user_id);
+    
+    /**
+     * 특정 스터디에 속한 세션 정보를 가져오는 메서드
+     * 
+     * @param studyId 조회할 스터디의 고유 ID
+     * @return 해당 스터디에 속한 세션 정보 리스트
+     */
+    public List<SessionDto> getSessionsByStudyId(int studyId);
+
+    /**
+     * 특정 세션에 참여하는 참가자들의 ID를 가져오는 메서드
+     * 
+     * @param sessionId 조회할 세션의 고유 ID
+     * @return 세션에 참여한 참가자들의 user_id 리스트
+     */
+    public List<Integer> getParticipantsBySessionId(int sessionId);
+
+    /**
+     * 특정 세션에서 풀 문제의 ID 리스트를 가져오는 메서드
+     * 
+     * @param sessionId 조회할 세션의 고유 ID
+     * @return 세션에서 풀 문제들의 problem_id 리스트
+     */
+    public List<Integer> getProblemsBySessionId(int sessionId);
+
+    
 }
