@@ -31,6 +31,10 @@ public class UserService {
 
     // 회원 정보 조회 처리
     public UserDto getUserById(int userId) {
-        return userDao.searchUserHandle(String.valueOf(userId));
+        return userDao.searchUserById(userId);
+    }
+    
+    public UserDto getUserByHandle(String handle) {
+        return userDao.searchUserHandle(handle);
     }
 }

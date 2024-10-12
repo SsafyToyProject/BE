@@ -45,4 +45,7 @@ public interface UserDao {
 	 */
 	UserDto deleteUser(UserDto userDto);
 	
+	//id로 유저 정보 찾기
+	public UserDto searchUserById(int userId);
+	
 }
