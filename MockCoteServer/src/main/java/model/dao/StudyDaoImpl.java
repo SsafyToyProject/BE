@@ -265,5 +265,43 @@ public class StudyDaoImpl implements StudyDao {
 
         return studyIds;
     }
+    
+    /**
+     * 스터디 코드로 스터디 조회
+     *
+     * @param code 스터디 코드
+     * @return StudyDto 객체
+     */
+    @Override
+    public StudyDto getStudyByCode(String code) {
+        String sql = "SELECT * FROM studies WHERE code = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        StudyDto study = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setString(1, code);
+            rs = ps.executeQuery();
+
+            if (rs.next()) {
+                study = new StudyDto(
+                    rs.getInt("study_id"),
+                    rs.getInt("owner_id"),
+                    rs.getString("name"),
+                    rs.getString("description"),
+                    rs.getString("code")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(rs, ps, conn);
+        }
+
+        return study;
+    }
 
 }
