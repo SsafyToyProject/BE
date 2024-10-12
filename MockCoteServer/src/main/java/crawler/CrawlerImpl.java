@@ -108,23 +108,19 @@ public class CrawlerImpl implements Crawler {
 	public List<ProblemDto> executeQuery(String query) {
 		List<ProblemDto> ret = new ArrayList<>();
 		int page = 1;
-
+		String pathUrl = "https://solved.ac/api/v3/search/problem?query=";
 		while (true) {
 			try (CloseableHttpClient client = HttpClients.createDefault()) {
-				HttpGet request = new HttpGet(query + page + "&sort=id");
+				HttpGet request = new HttpGet(pathUrl + query + "&page="+ page + "&sort=id");
 				HttpResponse response = client.execute(request);
 				String responseBody = EntityUtils.toString(response.getEntity());
 
 				// Parse the JSON response
 				JSONObject jsonResponse = new JSONObject(responseBody);
 
-				// Stop if there are no more problems
-				int count = jsonResponse.getInt("count");
-				if (count == 0)
-					break;
-
 				// Parse items
 				JSONArray items = jsonResponse.getJSONArray("items");
+				if(items.length() == 0) break;
 
 				// Store problemDto in an array
 				for (int i = 0; i < items.length(); i++) {

@@ -166,6 +166,7 @@ public class QueryDaoImpl implements QueryDao {
 						rs1.getString("title"),
 						rs1.getInt("num_problems"),
 						null);
+				ret.add(query);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
