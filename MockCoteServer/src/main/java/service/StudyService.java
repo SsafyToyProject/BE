@@ -61,4 +61,14 @@ public class StudyService {
     public List<Integer> getStudiesByUserId(int userId) {
         return studyDao.getStudiesByUserId(userId);
     }
+    
+    /**
+     * 스터디 코드로 스터디 조회 서비스 메서드
+     *
+     * @param code 스터디 코드
+     * @return StudyDto 객체
+     */
+    public StudyDto getStudyByCode(String code) {
+        return studyDao.getStudyByCode(code);
+    }
 }

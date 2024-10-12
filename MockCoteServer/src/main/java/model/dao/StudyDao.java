@@ -70,4 +70,7 @@ public interface StudyDao {
      * @return 가입된 스터디 ID 목록
      */
     List<Integer> getStudiesByUserId(int userId);
+    
+    //코드로 스터디 정보 조회
+    public StudyDto getStudyByCode(String code);
 }

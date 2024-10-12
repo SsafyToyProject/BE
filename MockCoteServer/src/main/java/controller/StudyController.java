@@ -57,15 +57,11 @@ public class StudyController extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String path = request.getPathInfo();
         if (path != null) {
-            if (path.equals("/register")) { //새로운 스터디 등록
-                // POST: /study/register
+            if (path.equals("/register")) { // 스터디 등록
                 handleRegisterStudy(request, response);
-            } 
-            else if (path.equals("/signup")) {
-            // POST: /study/signup
-            handleSignupStudy(request, response);  // 스터디 가입 처리
-            }
-            else {
+            } else if (path.equals("/signup")) { // 스터디 코드로 가입 처리
+                handleSignupStudy(request, response);  // 수정된 가입 처리 메서드
+            } else {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 Not Found
                 response.setContentType("application/json");
                 response.setCharacterEncoding("UTF-8");
@@ -86,6 +82,7 @@ public class StudyController extends HttpServlet {
             out.flush();
         }
     }
+
     
     // 사용자가 가입한 스터디 ID 목록을 조회하는 메서드
     private void getUserStudyList(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -135,9 +132,10 @@ public class StudyController extends HttpServlet {
         out.flush();
     }
     
- // 스터디 가입 처리 메서드
+
+ // 스터디 코드로 가입 처리하는 메서드
     private void handleSignupStudy(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 요청 본문에서 JSON 데이터 읽기
+        // 요청 본문에서 user_id와 study_code 가져오기
         StringBuilder jsonBuffer = new StringBuilder();
         String line;
         BufferedReader reader = request.getReader();
@@ -146,30 +144,34 @@ public class StudyController extends HttpServlet {
         }
         JSONObject requestBody = new JSONObject(jsonBuffer.toString());
 
-        // 요청 값 추출
         int userId = requestBody.getInt("user_id");
-        int studyId = requestBody.getInt("study_id");
+        String studyCode = requestBody.getString("study_code");
+
+        // 스터디 코드로 study_id 조회
+        StudyDto study = studyService.getStudyByCode(studyCode);
+        if (study == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND); // 404 Not Found
+            JSONObject errorResponse = new JSONObject();
+            errorResponse.put("error", "Study not found with this code.");
+            PrintWriter out = response.getWriter();
+            out.print(errorResponse.toString());
+            out.flush();
+            return;
+        }
 
         // 서비스 호출하여 스터디 가입 처리
-        boolean isSignedUp = studyService.insertStudyMember(studyId, userId);
-
+        boolean isSignedUp = studyService.insertStudyMember(study.getStudy_id(), userId);
         if (isSignedUp) {
-            // 가입 성공 시 응답 생성
-            response.setStatus(HttpServletResponse.SC_OK);  // 200 OK
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_OK); // 200 OK
             JSONObject responseBody = new JSONObject();
             responseBody.put("user_id", userId);
-            responseBody.put("study_id", studyId);
-
+            responseBody.put("study_code", studyCode);  // 요청에서 받은 study_code 반환
+            responseBody.put("message", "Successfully joined the study");
             PrintWriter out = response.getWriter();
             out.print(responseBody.toString());
             out.flush();
         } else {
-            // 가입 실패 시 응답
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);  // 500 Internal Server Error
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR); // 500 Internal Server Error
             JSONObject errorResponse = new JSONObject();
             errorResponse.put("error", "Failed to signup user to study");
             PrintWriter out = response.getWriter();
@@ -177,6 +179,7 @@ public class StudyController extends HttpServlet {
             out.flush();
         }
     }
+
 
  // 특정 스터디 ID의 상세 정보를 조회하는 메서드
     private void getStudyDetail(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -248,7 +251,9 @@ public class StudyController extends HttpServlet {
         int ownerId = requestBody.getInt("owner_id");
         String name = requestBody.getString("name");
         String description = requestBody.getString("description");
-        String code = requestBody.getString("code");
+
+        // code 생성 (랜덤 문자열 생성)
+        String code = generateStudyCode();
 
         // StudyDto 생성
         StudyDto newStudy = new StudyDto(-1, ownerId, name, description, code);
@@ -269,7 +274,7 @@ public class StudyController extends HttpServlet {
             return;
         }
 
-        // 등록 성공 시 응답
+        // 등록 성공 시 응답 (스터디 가입 URL 포함)
         response.setStatus(HttpServletResponse.SC_CREATED);  // 201 Created
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
@@ -280,8 +285,18 @@ public class StudyController extends HttpServlet {
         responseBody.put("description", registeredStudy.getDescription());
         responseBody.put("code", registeredStudy.getCode());
 
+        // 가입 URL을 응답에 포함
+        String signupUrl = request.getRequestURL().toString().replace("/register", "/signup/" + registeredStudy.getCode());
+        responseBody.put("signup_url", signupUrl);
+
         PrintWriter out = response.getWriter();
         out.print(responseBody.toString());
         out.flush();
     }
+
+    // 랜덤한 스터디 code를 생성하는 메서드
+    private String generateStudyCode() {
+        return Long.toHexString(Double.doubleToLongBits(Math.random()));
+    }
+
 }
