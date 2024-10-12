@@ -102,5 +102,11 @@ public interface SessionDao {
      */
     public List<Integer> getProblemsBySessionId(int sessionId);
 
-    
+    /**
+     * 중복 참가자 확인 메서드
+     * @param session_id
+     * @param user_id
+     * @return
+     */
+    boolean isParticipantExists(int session_id, int user_id);
 }
