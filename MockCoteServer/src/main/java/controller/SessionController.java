@@ -182,24 +182,56 @@ public class SessionController extends HttpServlet {
 	}
 	
 	private int participateInSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		// request 파싱
-		StringBuilder jsonBuffer = new StringBuilder();
-		String line;
-		BufferedReader reader = request.getReader();
-		while ((line = reader.readLine()) != null) {
-			jsonBuffer.append(line);
-		}
-		
-		// 문자열을 JSONObject로 변환
-		JSONObject jsonObject = new JSONObject(jsonBuffer.toString());
+	    // request 파싱
+	    StringBuilder jsonBuffer = new StringBuilder();
+	    String line;
+	    BufferedReader reader = request.getReader();
+	    while ((line = reader.readLine()) != null) {
+	        jsonBuffer.append(line);
+	    }
 
-		// session_id와 user_id 추출
-		int sessionId = jsonObject.getInt("session_id");
-		int userId = jsonObject.getInt("user_id");
-		
-		// Service 호출하여 데이터 저장
-		return sessionService.addParticipant(sessionId, userId);
+	    // 문자열을 JSONObject로 변환
+	    JSONObject jsonObject = new JSONObject(jsonBuffer.toString());
+
+	    // session_id와 user_id 추출
+	    int sessionId = jsonObject.getInt("session_id");
+	    int userId = jsonObject.getInt("user_id");
+
+	    // Service 호출하여 데이터 저장
+	    int result = sessionService.addParticipant(sessionId, userId);
+	    
+	    System.out.println("Result: " + result); // 로그 출력
+	    
+	    if (result == -1) {
+	        return -1;
+	    }
+
+	    // 참가자 목록을 가져와서 응답에 포함
+	    List<Integer> participants = sessionService.getSessionParticipants(sessionId);
+	    JSONArray participantsArray = new JSONArray();
+	    for (int participantId : participants) {
+	        JSONObject participantJson = new JSONObject();
+	        participantJson.put("user_id", participantId);
+	        participantsArray.put(participantJson);
+	    }
+
+	    // 응답 생성
+	    JSONObject body = new JSONObject();
+	    body.put("session_id", sessionId);
+	    body.put("user_id", userId);
+//	    body.put("participants", participantsArray);
+
+	    // 응답 출력
+	    response.setContentType("application/json");
+	    response.setCharacterEncoding("UTF-8");
+	    PrintWriter out = response.getWriter();
+	    out.print(body.toString());
+	    out.flush();
+	    out.close(); // 추가
+
+	    return 1;
 	}
+
 
 	private int parseAndRegisterSession (HttpServletRequest request, HttpServletResponse response) throws IOException {
 		StringBuilder jsonBuffer = new StringBuilder();

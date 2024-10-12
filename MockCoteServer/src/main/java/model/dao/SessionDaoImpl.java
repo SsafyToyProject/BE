@@ -311,5 +311,38 @@ public class SessionDaoImpl implements SessionDao {
         return problems;
     }
 	
+ // 중복 참가자 확인 메서드
+    @Override
+    public boolean isParticipantExists(int session_id, int user_id) {
+        String sql = "SELECT COUNT(*) FROM session_participants WHERE session_id = ? AND user_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        boolean result = false;
 
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, session_id);
+            ps.setInt(2, session_id);
+           
+            rs = ps.executeQuery();
+            
+            if (rs.next()) {
+            	int count = rs.getInt(1);
+            	result = (count>0);
+            	
+            	if (result) {
+                    // 중복된 경우 콘솔에 메시지 출력
+                    System.out.println("중복되었습니다: session_id=" + session_id + ", user_id=" + user_id);
+                }
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(rs, ps, conn);
+        }
+        return result; //중복여부반환 (중복이면 true)
+    }
 }
