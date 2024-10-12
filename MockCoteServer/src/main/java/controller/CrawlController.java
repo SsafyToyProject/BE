@@ -44,7 +44,6 @@ public class CrawlController extends HttpServlet {
                 
             // [크롤] 등록된 쿼리 목록 조회: GET /crawl/query
             } else if (path.equals("/query")) {
-                // 등록된 쿼리 목록 조회 로직 수행 (예시)
             	List<QueryDto> list = service.getQueryList();
                 JSONObject jsonResponse = new JSONObject();
                 jsonResponse.put("num_elements", list.size());

@@ -38,7 +38,6 @@ public class QueryService {
 		
 		//QueryDto 생성
 		QueryDto dto = new QueryDto(-1, title, query_str, num_probs, probs);
-		queryDao.insertQuery(dto);
 		
 		//Query 등록
 		int query_id = queryDao.insertQuery(dto);

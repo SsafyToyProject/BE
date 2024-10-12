@@ -9,6 +9,9 @@
 build/
 target/
 
+# 참고 디렉토리
+BOJPicker/
+
 # 서버 디렉토리
 Servers/
 

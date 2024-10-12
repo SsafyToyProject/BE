@@ -29,7 +29,7 @@ public class MyContextListener implements ServletContextListener {
             }
         };
 
-        // 5분마다 크롤링 작업 수행 (처음 지연 0, 1분 주기)
+        // 1분마다 크롤링 작업 수행 (처음 지연 0, 1분 주기)
         timer.scheduleAtFixedRate(task, 0, 60000);
     }
 
@@ -48,6 +48,7 @@ public class MyContextListener implements ServletContextListener {
     // 실제 크롤링 및 세션 업데이트 로직
     private void crawlAndUpdateSessions() {
         System.out.println("Crawling started...");
+        instance.triggerTrack();
         instance.liveTrack();
         System.out.println("Crawling and session update completed.");
     }

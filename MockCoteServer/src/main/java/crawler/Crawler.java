@@ -27,4 +27,9 @@ public interface Crawler {
 	 * servlet context listener가 주기적으로 호출한다.
 	 */
 	void liveTrack();
+	
+	/**
+	 * 시작시간 5분전, 아직 셋업되지 않는 세션들의 참가자를 확정하고, 문제를 선정한다.
+	 */
+	void triggerTrack();
 }

@@ -57,6 +57,18 @@ public interface SessionDao {
      */
     boolean insertProblem(int sessionId, int problemId);
     
+    /**
+     * 시작시간 5분전이 지난 세션들 중 아직 문제가 설정되지 않는 세션들을 반환한다.
+     * @return sessionDto 리스트
+     */
+    List<SessionDto> getReadySessions();
+    
+    /**
+     * session_id에 해당하는 참가자들을 찾는 메서드
+     * @param session_id
+     * @return 참가자 user_id 리스트
+     */
+    List<Integer> getParticipantsById(int session_id);
     
     /**
      * 세션에 참여하는 참가자를 추가하는 메서드

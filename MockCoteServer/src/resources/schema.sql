@@ -5,14 +5,14 @@ use mockcote;
 create table problems(
 	problem_id int not null unique,
     difficulty int,
-    title varchar(50),
+    title varchar(2000),
     primary key(problem_id)
 );
 
 create table queries(
 	query_id int auto_increment,
-    title varchar(50),
-    query_str varchar(100),
+    title varchar(100),
+    query_str varchar(2000),
     num_problems int,
     primary key(query_id)
 );
