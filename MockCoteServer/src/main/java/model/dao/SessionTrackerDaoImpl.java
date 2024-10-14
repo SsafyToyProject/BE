@@ -122,8 +122,8 @@ public class SessionTrackerDaoImpl implements SessionTrackerDao {
 		//업데이트
 		Connection conn = null;
 		PreparedStatement pstmt = null;
-		String sql = "update session_trackers set solved_at=?,performace=?,language=?,code_link=?,description=? "
-				+ "where session_id=?,user_id=?,problem_id=?";
+		String sql = "update session_trackers set solved_at=?,performance=?,language=?,code_link=?,description=? "
+				+ "where session_id=? and user_id=? and problem_id=?";
 		
 		try {
 			conn = DBUtil.getConnection();

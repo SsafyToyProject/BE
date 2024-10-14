@@ -34,6 +34,7 @@ import model.dto.QueryDto;
 import model.dto.SessionDto;
 import model.dto.SessionTrackerDto;
 import model.dto.UserDto;
+import service.SessionService;
 
 public class CrawlerImpl implements Crawler {
 
@@ -52,6 +53,7 @@ public class CrawlerImpl implements Crawler {
 	static SessionDao sessionDao = SessionDaoImpl.getInstance();
 	static SessionTrackerDao sessionTrackerDao = SessionTrackerDaoImpl.getInstance();
 	static QueryDao queryDao = QueryDaoImpl.getInstance();
+	static SessionService sessionService = SessionService.getInstance();
 
 	// Override functions
 
@@ -141,6 +143,8 @@ public class CrawlerImpl implements Crawler {
 	public void liveTrack() {
 		List<SessionDto> activeSessions = sessionDao.getActiveSessions();
 		for (SessionDto session : activeSessions) {
+			System.out.println("[Crawler] Session tracking for id : " + session.getSession_id());
+			session = sessionService.getSessionById(session.getSession_id());
 			for (ProblemDto problem : session.getSessionProblem()) {
 				String url = "https://www.acmicpc.net/status?problem_id=" + problem.getProblem_id()
 						+ "&user_id=&language_id=-1&result_id=4&from_problem=1";
@@ -164,6 +168,7 @@ public class CrawlerImpl implements Crawler {
 										user.getUser_id(), problem.getProblem_id(),
 										new Timestamp(System.currentTimeMillis()), rec.performance, rec.language,
 										rec.submission_id + "", "");
+								System.out.println("[Crawler] Updating tracker for user:" + user.getUser_id() + " and problem:" + problem.getProblem_id());
 								sessionTrackerDao.updateSessionTracker(dto);
 								break;
 							}
@@ -221,7 +226,10 @@ public class CrawlerImpl implements Crawler {
 	public void triggerTrack() {
 		List<SessionDto> sessions = sessionDao.getReadySessions();
 		for (SessionDto session : sessions) {
+			
 			int session_id = session.getSession_id();
+			System.out.println("[Crawler] Session triggering for id : " + session_id);
+			
 			// session의 문제를 선정해서 session_problems 테이블에 삽입하고, sessionTracker도 삽입한다.
 
 			// 참가자 목록 확인

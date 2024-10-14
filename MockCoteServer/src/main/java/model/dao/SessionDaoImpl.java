@@ -6,9 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import model.dao.SessionDao;
+
 import model.dto.SessionDto;
-import model.dto.UserDto;
 import util.DBUtil;
 
 public class SessionDaoImpl implements SessionDao {
@@ -80,8 +79,8 @@ public class SessionDaoImpl implements SessionDao {
 	@Override
 	public int insertSession(SessionDto session) {
 		// TODO : session dto 수정에 따른 insert 수정 필요
-		String sql = "INSERT INTO sessions (session_id, study_id, query_id, start_at, end_at, problem_pool)"
-				+ " VALUES (?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO sessions (study_id, query_id, start_at, end_at, problem_pool)"
+				+ " VALUES (?, ?, ?, ?, ?)";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -89,10 +88,8 @@ public class SessionDaoImpl implements SessionDao {
 		try {
 			conn = DBUtil.getConnection();
 			ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-
-			ps.setInt(1, session.getSession_id());
-			ps.setInt(2, session.getStudy_id());
-			ps.setInt(3, session.getQuery_id());
+			ps.setInt(1, session.getStudy_id());
+			ps.setInt(2, session.getQuery_id());
 			ps.setTimestamp(3, session.getStart_at());
 			ps.setTimestamp(4, session.getEnd_at());
 			ps.setString(5, session.getProblem_pool());
@@ -320,7 +317,7 @@ public class SessionDaoImpl implements SessionDao {
     @Override
 	public List<SessionDto> getReadySessions() {
 		List<SessionDto> ret = new ArrayList<>();
-		String sql = "SELECT * FROM sessions WHERE NOW() BETWEEN DATE_SUB(start_at, INTERVAL 5 MINUTE) AND start_at";
+		String sql = "SELECT * FROM sessions WHERE NOW() BETWEEN DATE_SUB(start_at, INTERVAL 3 MINUTE) AND start_at";
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
@@ -381,38 +378,4 @@ public class SessionDaoImpl implements SessionDao {
 		}
 		return ret;
 	}
- // 중복 참가자 확인 메서드
-    @Override
-    public boolean isParticipantExists(int session_id, int user_id) {
-        String sql = "SELECT COUNT(*) FROM session_participants WHERE session_id = ? AND user_id = ?";
-        Connection conn = null;
-        PreparedStatement ps = null;
-        ResultSet rs = null;
-        boolean result = false;
-
-        try {
-            conn = DBUtil.getConnection();
-            ps = conn.prepareStatement(sql);
-            ps.setInt(1, session_id);
-            ps.setInt(2, session_id);
-           
-            rs = ps.executeQuery();
-            
-            if (rs.next()) {
-            	int count = rs.getInt(1);
-            	result = (count>0);
-            	
-            	if (result) {
-                    // 중복된 경우 콘솔에 메시지 출력
-                    System.out.println("중복되었습니다: session_id=" + session_id + ", user_id=" + user_id);
-                }
-            }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            DBUtil.close(rs, ps, conn);
-        }
-        return result; //중복여부반환 (중복이면 true)
-    }
 }
