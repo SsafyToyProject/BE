@@ -1,4 +1,5 @@
 drop database if exists mockcote;
+set global time_zone = "+9:00";
 create database mockcote;
 use mockcote;
 
@@ -26,7 +27,7 @@ create table candidates(
 
 create table users(
 	user_id int auto_increment,
-    handle varchar(50),
+    handle varchar(50) unique,
     password varchar(50),
     level int,
     primary key(user_id)
@@ -46,7 +47,8 @@ create table study_members(
 	study_id int,
     user_id int,
     foreign key(study_id) references studies(study_id),
-    foreign key(user_id) references users(user_id)
+    foreign key(user_id) references users(user_id),
+	unique (study_id, user_id)
 );
 
 create table sessions(
@@ -65,7 +67,8 @@ create table session_participants (
 	session_id int,
     user_id int,
     foreign key (session_id) references sessions(session_id),
-    foreign key (user_id) references users(user_id)
+    foreign key (user_id) references users(user_id),
+    unique(session_id, user_id)
 );
 
 create table session_problems (

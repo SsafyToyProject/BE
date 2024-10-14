@@ -114,7 +114,9 @@ public class QueryDaoImpl implements QueryDao {
 		String sql1 = "select * from queries where query_id=?";
 		PreparedStatement pstmt2 = null;
 		ResultSet rs2 = null;
-		String sql2 = "select * from candidates where query_id=?";
+		String sql2 = "select * from candidates as c\r\n"
+				+ "join problems as p "
+				+ "where c.problem_id = p.problem_id and query_id=?";
 
 		try {
 			conn = DBUtil.getConnection();

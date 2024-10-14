@@ -1,10 +1,17 @@
 package service;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import model.dao.ProblemDao;
+import model.dao.ProblemDaoImpl;
 import model.dao.SessionDao;
 import model.dao.SessionDaoImpl;
+import model.dao.UserDao;
+import model.dao.UserDaoImpl;
+import model.dto.ProblemDto;
 import model.dto.SessionDto;
+import model.dto.UserDto;
 
 public class SessionService {
 	private static SessionService instance = new SessionService();
@@ -12,6 +19,8 @@ public class SessionService {
 	public static SessionService getInstance() {return instance;}
 	
 	private SessionDao sessionDao = SessionDaoImpl.getInstance();
+	private UserDao userDao = UserDaoImpl.getInstance();
+	private ProblemDao problemDao = ProblemDaoImpl.getInstance();
 	
 	/**
 	 * 
@@ -35,13 +44,6 @@ public class SessionService {
      * @return 성공 시 1, 중복 시 -1 반환
      */
     public int addParticipant(int session_id, int user_id) {
-        // 참가자가 이미 해당 세션에 참여했는지 확인
-        boolean exists = sessionDao.isParticipantExists(session_id, user_id);
-        if (exists) {
-            // 중복된 경우 -1 반환
-            return -1;
-        }
-        
         // session_participants 테이블에 참가자 추가
         return sessionDao.addParticipant(session_id, user_id);
     }
@@ -74,6 +76,28 @@ public class SessionService {
      */
     public List<Integer> getSessionProblems(int sessionId) {
         return sessionDao.getProblemsBySessionId(sessionId);
+    }
+    
+    /**
+     * 세션 ID에 해당하는 세션 상세 정보 가져오기 (문제 및 참가자 정보 포함)
+     * 
+     * @param sessionId
+     * @return sessionDto
+     */
+    public SessionDto getSessionById(int sessionId) {
+    	SessionDto ret = sessionDao.getSessionById(sessionId);
+    	
+    	List<Integer> uids = sessionDao.getParticipantsById(sessionId);
+    	List<UserDto> users = new ArrayList<>();
+    	for(int uid : uids) users.add(userDao.searchUserById(uid));
+    	ret.setSessionParticipant(users);
+    	
+    	List<Integer> pids = sessionDao.getProblemsBySessionId(sessionId);
+    	List<ProblemDto> probs = new ArrayList<>();
+    	for(int pid : pids) probs.add(problemDao.searchById(pid));
+    	ret.setSessionProblem(probs);
+    	
+    	return ret;
     }
 	
 	
