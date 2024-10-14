@@ -31,6 +31,8 @@ public class UserController extends HttpServlet {
                 handleLogin(request, response); // 로그인 처리
             } else if (path.equals("/signup")) {
                 handleSignup(request, response); // 회원가입 처리
+            } else if (path.equals("/logout")) {
+                handleLogout(request, response); // 로그아웃 처리
             } else {
                 sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, "Invalid path");
             }
@@ -47,6 +49,28 @@ public class UserController extends HttpServlet {
             getUserInfo(request, response); // 회원 정보 조회
         } else {
             sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, "Invalid path");
+        }
+    }
+    
+ // 로그아웃 처리
+    private void handleLogout(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        HttpSession session = request.getSession(false); // 기존 세션 가져오기, 없으면 null 반환
+        if (session != null && session.getAttribute("user") != null) {
+            session.invalidate(); // 세션 무효화
+
+            // 쿠키에서 JSESSIONID 삭제
+            Cookie sessionCookie = new Cookie("JSESSIONID", null);
+            sessionCookie.setMaxAge(0); // 쿠키 삭제
+            sessionCookie.setPath("/"); // 전체 경로에 적용
+            response.addCookie(sessionCookie);
+
+            JSONObject successResponse = new JSONObject();
+            successResponse.put("status", HttpServletResponse.SC_OK);
+            successResponse.put("message", "User logged out successfully");
+
+            sendSuccessResponse(response, successResponse);
+        } else {
+            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "User is not logged in");
         }
     }
 
@@ -102,6 +126,13 @@ public class UserController extends HttpServlet {
         String password = requestBody.getString("password");
         int level = requestBody.getInt("level");
 
+        // 중복된 handle 확인
+        UserDto existingUser = userService.getUserByHandle(handle);
+        if (existingUser != null) {
+            sendErrorResponse(response, HttpServletResponse.SC_CONFLICT, "Handle already exists");
+            return;
+        }
+
         // 회원가입 처리
         UserDto newUser = new UserDto(-1, handle, password, level);
         UserDto addedUser = userService.addUser(newUser);
@@ -119,24 +150,34 @@ public class UserController extends HttpServlet {
         }
     }
 
-    // 회원 정보 조회 처리 (세션을 활용)
+
     private void getUserInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        HttpSession session = request.getSession(false); // 기존 세션 가져오기 (있으면)
-        if (session == null || session.getAttribute("user") == null) {
-            sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "User is not logged in");
+        String pathInfo = request.getPathInfo();
+        String[] pathParts = pathInfo.split("/");
+        int userId;
+
+        try {
+            userId = Integer.parseInt(pathParts[1]); // URL에서 user_id 가져오기
+        } catch (NumberFormatException e) {
+            sendErrorResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Invalid user ID");
             return;
         }
 
-        UserDto loggedInUser = (UserDto) session.getAttribute("user");
+        // user_id로 회원 정보 조회
+        UserDto user = userService.getUserById(userId);
+        if (user == null) {
+            sendErrorResponse(response, HttpServletResponse.SC_NOT_FOUND, "User not found");
+        } else {
+            JSONObject successResponse = new JSONObject();
+            successResponse.put("status", HttpServletResponse.SC_OK);
+            successResponse.put("user_id", user.getUser_id());
+            successResponse.put("handle", user.getHandle());
+            successResponse.put("level", user.getLevel());
 
-        JSONObject successResponse = new JSONObject();
-        successResponse.put("status", HttpServletResponse.SC_OK);
-        successResponse.put("user_id", loggedInUser.getUser_id());
-        successResponse.put("handle", loggedInUser.getHandle());
-        successResponse.put("level", loggedInUser.getLevel());
-
-        sendSuccessResponse(response, successResponse);
+            sendSuccessResponse(response, successResponse);
+        }
     }
+
 
     // 성공 응답 전송 메서드
     private void sendSuccessResponse(HttpServletResponse response, JSONObject successResponse) throws IOException {

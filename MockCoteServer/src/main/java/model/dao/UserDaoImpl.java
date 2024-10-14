@@ -81,6 +81,37 @@ public class UserDaoImpl implements UserDao {
         }
         return user;
     }
+    
+ // user_id로 유저 찾기
+    @Override
+    public UserDto searchUserById(int userId) {
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        UserDto user = null;
+
+        try {
+            conn = DBUtil.getConnection();
+            ps = conn.prepareStatement(sql);
+            ps.setInt(1, userId); // user_id를 설정
+
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                user = new UserDto(
+                    rs.getInt("user_id"),
+                    rs.getString("handle"),
+                    rs.getString("password"),
+                    rs.getInt("level")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            DBUtil.close(rs, ps, conn);
+        }
+        return user;
+    }
 
     // 비밀번호 찾기
     @Override
