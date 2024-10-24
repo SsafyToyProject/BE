@@ -79,8 +79,8 @@ public class QueryDaoImpl implements QueryDao {
 			rs1 = pstmt1.executeQuery();
 			while (rs1.next()) {
 				QueryDto query = new QueryDto(rs1.getInt("query_id"),
-						rs1.getString("query_str"),
 						rs1.getString("title"),
+						rs1.getString("query_str"),
 						rs1.getInt("num_problems"),
 						null);
 
@@ -126,8 +126,8 @@ public class QueryDaoImpl implements QueryDao {
 
 			if (rs1.next()) {
 				query = new QueryDto(rs1.getInt("query_id"),
-						rs1.getString("query_str"),
 						rs1.getString("title"),
+						rs1.getString("query_str"),
 						rs1.getInt("num_problems"),
 						null);
 
@@ -164,8 +164,8 @@ public class QueryDaoImpl implements QueryDao {
 			rs1 = pstmt1.executeQuery();
 			while (rs1.next()) {
 				QueryDto query = new QueryDto(rs1.getInt("query_id"),
-						rs1.getString("query_str"),
 						rs1.getString("title"),
+						rs1.getString("query_str"),
 						rs1.getInt("num_problems"),
 						null);
 				ret.add(query);
