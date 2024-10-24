@@ -207,6 +207,9 @@ public class StudyController extends HttpServlet {
             return;
         }
 
+        // 스터디 소유자의 handle 조회
+        UserDto owner = studyService.getUserById(study.getOwner_id());  // owner의 user_id로 handle 조회
+
         // 스터디에 속한 멤버 조회 (UserDto 리스트로 반환)
         List<UserDto> studyMembers = studyService.getUsersByStudyId(studyId);
 
@@ -214,6 +217,7 @@ public class StudyController extends HttpServlet {
         JSONObject responseBody = new JSONObject();
         responseBody.put("study_id", study.getStudy_id());
         responseBody.put("owner_id", study.getOwner_id());
+        responseBody.put("owner_handle", owner.getHandle());  // 소유자의 handle 추가
         responseBody.put("name", study.getName());
         responseBody.put("description", study.getDescription());
         responseBody.put("code", study.getCode());
@@ -235,6 +239,7 @@ public class StudyController extends HttpServlet {
         out.print(responseBody.toString());
         out.flush();
     }
+
 
 
 	

@@ -74,4 +74,6 @@ public interface StudyDao {
     
     //코드로 스터디 정보 조회
     public StudyDto getStudyByCode(String code);
+    
+   
 }
