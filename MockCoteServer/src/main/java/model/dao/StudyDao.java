@@ -3,6 +3,7 @@ package model.dao;
 import java.util.List;
 
 import model.dto.StudyDto;
+import model.dto.UserDto;
 
 public interface StudyDao {
 
@@ -48,12 +49,12 @@ public interface StudyDao {
 	public boolean insertStudyMember(int studyId, int userId);
 	
 	/**
-	 * 특정 스터디에 가입된 모든 사용자 ID 가져오기
-	 * 
-	 * @param studyId 사용자 ID를 가져올 스터디의 ID
-	 * @return 스터디에 가입된 모든 사용자의 ID 리스트
-	 */
-	public List<Integer> getUsersByStudyId(int studyId);
+     * 특정 스터디에 가입된 모든 사용자 정보를 가져오기
+     * 
+     * @param studyId 사용자 정보를 가져올 스터디의 ID
+     * @return 스터디에 가입된 모든 사용자의 정보 리스트
+     */
+    public List<UserDto> getUsersByStudyId(int studyId);
 	
 	/**
      * 특정 스터디 ID에 해당하는 스터디 정보를 조회
@@ -73,4 +74,6 @@ public interface StudyDao {
     
     //코드로 스터디 정보 조회
     public StudyDto getStudyByCode(String code);
+    
+   
 }

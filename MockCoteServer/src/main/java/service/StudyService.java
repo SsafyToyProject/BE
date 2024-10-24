@@ -4,12 +4,16 @@ import java.util.List;
 
 import model.dao.StudyDao;
 import model.dao.StudyDaoImpl;
+import model.dao.UserDao;
+import model.dao.UserDaoImpl;
 import model.dto.StudyDto;
+import model.dto.UserDto;
 
 public class StudyService {
 
     private static StudyService instance = new StudyService();
     private StudyDao studyDao = StudyDaoImpl.getInstance();
+    private UserDao userDao = UserDaoImpl.getInstance();
 
     private StudyService() {}
 
@@ -48,12 +52,12 @@ public class StudyService {
     }
 
     /**
-     * 특정 스터디에 속한 모든 멤버의 ID를 조회하는 서비스 메서드
+     * 특정 스터디에 속한 모든 멤버를 조회하는 서비스 메서드
      *
      * @param studyId 스터디 ID
      * @return 멤버 ID 리스트
      */
-    public List<Integer> getUsersByStudyId(int studyId) {
+    public List<UserDto> getUsersByStudyId(int studyId) {
         return studyDao.getUsersByStudyId(studyId);
     }
     
@@ -70,5 +74,15 @@ public class StudyService {
      */
     public StudyDto getStudyByCode(String code) {
         return studyDao.getStudyByCode(code);
+    }
+    
+    /**
+     * 유저 ID로 유저 정보 조회 서비스 메서드
+     *
+     * @param userId 유저 ID
+     * @return UserDto 객체
+     */
+    public UserDto getUserById(int userId) {
+        return userDao.searchUserById(userId); // StudyDao에 구현된 메서드를 호출
     }
 }
