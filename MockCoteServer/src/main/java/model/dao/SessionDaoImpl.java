@@ -150,7 +150,6 @@ public class SessionDaoImpl implements SessionDao {
 			ps = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
 			ps.setInt(1, session.getStudy_id());
 			ps.setInt(2, session.getQuery_id());
-			System.out.println("[SessionDao] Insert start Time : " + session.getStart_at());
 			ps.setTimestamp(3, session.getStart_at());
 			ps.setTimestamp(4, session.getEnd_at());
 			ps.setString(5, session.getProblem_pool());

@@ -29,6 +29,8 @@ import model.dao.SessionDao;
 import model.dao.SessionDaoImpl;
 import model.dao.SessionTrackerDao;
 import model.dao.SessionTrackerDaoImpl;
+import model.dao.UserDao;
+import model.dao.UserDaoImpl;
 import model.dto.ProblemDto;
 import model.dto.QueryDto;
 import model.dto.SessionDto;
@@ -54,6 +56,7 @@ public class CrawlerImpl implements Crawler {
 	static SessionTrackerDao sessionTrackerDao = SessionTrackerDaoImpl.getInstance();
 	static QueryDao queryDao = QueryDaoImpl.getInstance();
 	static SessionService sessionService = SessionService.getInstance();
+	static UserDao userDao = UserDaoImpl.getInstance();
 
 	// Override functions
 
@@ -237,8 +240,9 @@ public class CrawlerImpl implements Crawler {
 			//List<UserDto> participants = new ArrayList<>();
 			List<String> handles = new ArrayList<>();
 			for (int uid : participants_id) {
-				// TODO : UserDao를 활용해서 handles list화
+				handles.add(userDao.searchUserById(uid).getHandle());
 			}
+			System.out.println("[Crawler] Session participants handles : " + handles);
 
 			// 쿼리 정보
 			QueryDto query = queryDao.searchById(session.getQuery_id());
@@ -246,6 +250,7 @@ public class CrawlerImpl implements Crawler {
 
 			// 이미 푼 문제 셋
 			Set<Integer> solved = getSolvedProblemsByHandle(handles);
+			System.out.println("[Cralwer] Solved Problems length : " + solved.size());
 
 			// problemPool 파싱
 			List<Integer> pick_difficulties = new ArrayList<>();
@@ -278,9 +283,8 @@ public class CrawlerImpl implements Crawler {
 
 			// 안푼 문제 분류
 			List<ProblemDto> unsolved[] = new List[31];
-			for (int i : pick_difficulties) if(unsolved[i] == null) unsolved[i] = new ArrayList<>();
+			for (int i = 0; i <= 30;i++) unsolved[i] = new ArrayList<>();
 			for (ProblemDto pd : problems) {
-				if(unsolved[pd.getDifficulty()] == null) continue;
 				if (!solved.contains(pd.getProblem_id())) {
 					unsolved[pd.getDifficulty()].add(pd);
 				}
@@ -290,16 +294,15 @@ public class CrawlerImpl implements Crawler {
 			List<ProblemDto> pick_problems = new ArrayList<>();
 			Random random = new Random();
 			for(int diffi : pick_difficulties) {
-				int turn = 0;
-				while(true) {
-					ProblemDto pick = unsolved[diffi].get(random.nextInt(unsolved[diffi].size()));
-					if(!pick_problems.contains(pick)) {
-						pick_problems.add(pick);
-						break;
-					}
-					turn++;
-					if(turn == 500) break; //no data..
+				while(diffi <= 30 && unsolved[diffi].size() == 0) diffi++;
+				if(diffi > 30) {
+					System.out.println("[Crawler] Error : no problems to choose...");
+					continue;
 				}
+				ProblemDto pick = unsolved[diffi].get(random.nextInt(unsolved[diffi].size()));
+				System.out.println("[Cralwer] Pick problem " + pick.getProblem_id() + " for difficulty : " + diffi);
+				pick_problems.add(pick);
+				unsolved[diffi].remove(pick);
 			}
 			
 			// 문제 리스트 와 트래커 등록
