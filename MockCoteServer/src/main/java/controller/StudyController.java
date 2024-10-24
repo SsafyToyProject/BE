@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import model.dto.StudyDto;
+import model.dto.UserDto;
 import service.StudyService;
 
 @WebServlet(urlPatterns = { "/study/*" })
@@ -181,7 +182,6 @@ public class StudyController extends HttpServlet {
     }
 
 
- // 특정 스터디 ID의 상세 정보를 조회하는 메서드
     private void getStudyDetail(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String pathInfo = request.getPathInfo();
         String[] pathParts = pathInfo.split("/");
@@ -207,8 +207,8 @@ public class StudyController extends HttpServlet {
             return;
         }
 
-        // 스터디에 속한 멤버 조회
-        List<Integer> studyMembers = studyService.getUsersByStudyId(studyId);
+        // 스터디에 속한 멤버 조회 (UserDto 리스트로 반환)
+        List<UserDto> studyMembers = studyService.getUsersByStudyId(studyId);
 
         // JSON 응답 생성
         JSONObject responseBody = new JSONObject();
@@ -220,9 +220,10 @@ public class StudyController extends HttpServlet {
         responseBody.put("study_member_cnt", studyMembers.size());
 
         JSONArray memberArray = new JSONArray();
-        for (int memberId : studyMembers) {
+        for (UserDto member : studyMembers) {
             JSONObject memberJson = new JSONObject();
-            memberJson.put("user_id", memberId);
+            memberJson.put("user_id", member.getUser_id());
+            memberJson.put("handle", member.getHandle());
             memberArray.put(memberJson);
         }
         responseBody.put("study_member", memberArray);
@@ -234,6 +235,7 @@ public class StudyController extends HttpServlet {
         out.print(responseBody.toString());
         out.flush();
     }
+
 
 	
 

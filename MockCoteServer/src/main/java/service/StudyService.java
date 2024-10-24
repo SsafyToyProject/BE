@@ -5,6 +5,7 @@ import java.util.List;
 import model.dao.StudyDao;
 import model.dao.StudyDaoImpl;
 import model.dto.StudyDto;
+import model.dto.UserDto;
 
 public class StudyService {
 
@@ -48,12 +49,12 @@ public class StudyService {
     }
 
     /**
-     * 특정 스터디에 속한 모든 멤버의 ID를 조회하는 서비스 메서드
+     * 특정 스터디에 속한 모든 멤버를 조회하는 서비스 메서드
      *
      * @param studyId 스터디 ID
      * @return 멤버 ID 리스트
      */
-    public List<Integer> getUsersByStudyId(int studyId) {
+    public List<UserDto> getUsersByStudyId(int studyId) {
         return studyDao.getUsersByStudyId(studyId);
     }
     
