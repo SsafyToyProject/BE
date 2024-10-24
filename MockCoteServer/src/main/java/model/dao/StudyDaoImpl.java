@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.dto.StudyDto;
+import model.dto.UserDto;
 import util.DBUtil;
 
 public class StudyDaoImpl implements StudyDao {
@@ -179,32 +180,38 @@ public class StudyDaoImpl implements StudyDao {
 	    return res;
 	}
 	
-	//스터디에 가입한 모든 유저 정보 반환
 	@Override
-	public List<Integer> getUsersByStudyId(int studyId) {
-	    String sql = "SELECT user_id FROM study_members WHERE study_id = ?";
+	public List<UserDto> getUsersByStudyId(int studyId) {
+	    String sql = "SELECT u.user_id, u.handle FROM users u "
+	               + "JOIN study_members sm ON u.user_id = sm.user_id "
+	               + "WHERE sm.study_id = ?";
+	    
 	    Connection conn = null;
 	    PreparedStatement ps = null;
 	    ResultSet rs = null;
-	    List<Integer> userIds = new ArrayList<>();
+	    List<UserDto> userList = new ArrayList<>();
 
 	    try {
-	        conn = DBUtil.getConnection();
+	        conn = DBUtil.getConnection();  // DB 연결
 	        ps = conn.prepareStatement(sql);
-	        ps.setInt(1, studyId);
+	        ps.setInt(1, studyId);  // studyId를 SQL 쿼리에 바인딩
 	        rs = ps.executeQuery();
 
 	        while (rs.next()) {
-	            userIds.add(rs.getInt("user_id")); // user_id를 리스트에 추가
+	            int userId = rs.getInt("user_id");  // user_id 가져오기
+	            String handle = rs.getString("handle");  // handle 가져오기
+	            UserDto user = new UserDto(userId, handle,null,0);  // UserDto 객체 생성
+	            userList.add(user);  // 리스트에 추가
 	        }
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    } finally {
-	        DBUtil.close(rs, ps, conn);
+	        DBUtil.close(rs, ps, conn);  // 리소스 해제
 	    }
 
-	    return userIds; // study_id에 가입된 모든 user_id를 반환
+	    return userList;  // study_id에 가입된 모든 사용자의 정보(UserDto) 리스트를 반환
 	}
+
 	
 	// 스터디 상세 조회
     @Override
@@ -303,5 +310,7 @@ public class StudyDaoImpl implements StudyDao {
 
         return study;
     }
+    
+  
 
 }

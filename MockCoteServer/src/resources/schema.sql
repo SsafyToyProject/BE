@@ -28,7 +28,7 @@ create table candidates(
 create table users(
 	user_id int auto_increment,
     handle varchar(50) unique,
-    password varchar(50),
+    password varchar(250),
     level int,
     primary key(user_id)
 );
