@@ -102,7 +102,7 @@ public class CrawlerImpl implements Crawler {
 				// Add to global solved list
 				ret.addAll(problemNumbers);
 
-			} catch (IOException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
