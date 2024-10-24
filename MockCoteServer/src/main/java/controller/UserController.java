@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import org.json.JSONObject;
+import org.mindrot.jbcrypt.BCrypt;
 
 import model.dto.UserDto;
 import service.UserService;
@@ -87,9 +88,9 @@ public class UserController extends HttpServlet {
         String handle = requestBody.getString("handle");
         String password = requestBody.getString("password");
 
-        // 로그인 처리
-        UserDto user = userService.login(handle, password);
-        if (user == null) {
+        // 사용자 정보 가져오기
+        UserDto user = userService.getUserByHandle(handle);
+        if (user == null || !BCrypt.checkpw(password, user.getPassword())) { // 비밀번호 비교
             sendErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid login credentials");
         } else {
             // 세션 생성 및 쿠키 설정
@@ -112,7 +113,8 @@ public class UserController extends HttpServlet {
         }
     }
 
-    // 회원가입 처리
+
+    //회원가입 처리
     private void handleSignup(HttpServletRequest request, HttpServletResponse response) throws IOException {
         // 요청에서 회원가입 정보 가져오기
         StringBuilder jsonBuffer = new StringBuilder();
@@ -133,8 +135,11 @@ public class UserController extends HttpServlet {
             return;
         }
 
+        // 비밀번호 해시 처리
+        String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
         // 회원가입 처리
-        UserDto newUser = new UserDto(-1, handle, password, level);
+        UserDto newUser = new UserDto(-1, handle, hashedPassword, level);
         UserDto addedUser = userService.addUser(newUser);
 
         if (addedUser == null) {
@@ -149,6 +154,7 @@ public class UserController extends HttpServlet {
             sendSuccessResponse(response, successResponse);
         }
     }
+
 
 
     private void getUserInfo(HttpServletRequest request, HttpServletResponse response) throws IOException {
