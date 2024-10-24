@@ -100,5 +100,15 @@ public class SessionService {
     	return ret;
     }
 	
+    public List<SessionDto> getSessionsByStudyIdSortedByEndAtDesc(int studyId) {
+        // 세션을 종료 시간 기준으로 내림차순 정렬하는 로직 추가
+        return sessionDao.getSessionsByStudyIdSortedByEndAtDesc(studyId);
+    }
+
+    public List<UserDto> getSessionParticipantsWithHandle(int sessionId) {
+        // 세션 참가자의 user_id와 handle을 가져오는 로직 추가
+        return sessionDao.getSessionParticipantsWithHandle(sessionId);
+    }
+
 	
 }

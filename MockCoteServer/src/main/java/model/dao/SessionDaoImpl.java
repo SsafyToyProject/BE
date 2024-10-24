@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import model.dto.SessionDto;
+import model.dto.UserDto;
 import util.DBUtil;
 
 public class SessionDaoImpl implements SessionDao {
@@ -19,6 +20,65 @@ public class SessionDaoImpl implements SessionDao {
 	public static SessionDao getInstance() {
 		return instance;
 	}
+	
+	// 특정 studyId로 세션 목록 가져오기 (종료 시간 기준으로 내림차순 정렬)
+		@Override
+		public List<SessionDto> getSessionsByStudyIdSortedByEndAtDesc(int studyId) {
+			List<SessionDto> sessions = new ArrayList<>();
+			String sql = "SELECT * FROM sessions WHERE study_id = ? ORDER BY end_at DESC";  // 종료 시간을 기준으로 내림차순 정렬
+			Connection conn = null;
+			PreparedStatement ps = null;
+			ResultSet rs = null;
+
+			try {
+				conn = DBUtil.getConnection();
+				ps = conn.prepareStatement(sql);
+				ps.setInt(1, studyId);
+				rs = ps.executeQuery();
+
+				while (rs.next()) {
+					sessions.add(new SessionDto(rs.getInt("session_id"), rs.getInt("study_id"), rs.getInt("query_id"),
+							rs.getTimestamp("start_at"), rs.getTimestamp("end_at"), rs.getString("problem_pool")));
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				DBUtil.close(rs, ps, conn);
+			}
+
+			return sessions;
+		}
+
+		// 세션의 참가자 목록 가져오기 (user_id와 handle 포함)
+		@Override
+		public List<UserDto> getSessionParticipantsWithHandle(int sessionId) {
+			List<UserDto> participants = new ArrayList<>();
+			String sql = "SELECT u.user_id, u.handle FROM users u JOIN session_participants sp ON u.user_id = sp.user_id WHERE sp.session_id = ?";
+			Connection conn = null;
+			PreparedStatement ps = null;
+			ResultSet rs = null;
+
+			try {
+				conn = DBUtil.getConnection();
+				ps = conn.prepareStatement(sql);
+				ps.setInt(1, sessionId);
+				rs = ps.executeQuery();
+
+				while (rs.next()) {
+					int userId = rs.getInt("user_id");
+					String handle = rs.getString("handle");
+					UserDto user = new UserDto(userId, handle, null, 0);  // UserDto 객체 생성
+					participants.add(user);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				DBUtil.close(rs, ps, conn);
+			}
+
+			return participants;
+		}
+
 
 	// 모든 세션 가져오기
 	@Override

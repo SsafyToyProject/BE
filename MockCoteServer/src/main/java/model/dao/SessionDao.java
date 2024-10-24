@@ -1,6 +1,5 @@
 package model.dao;
 
-import java.sql.SQLException;
 import java.util.List;
 import model.dto.SessionDto;
 import model.dto.UserDto;
@@ -27,7 +26,6 @@ public interface SessionDao {
      */
     int insertSession(SessionDto session);
 
-    
     /**
      * 특정 세션 ID에 해당하는 세션 정보를 삭제하는 메서드
      * @param sessionId 삭제할 세션의 고유 ID
@@ -47,7 +45,7 @@ public interface SessionDao {
      * @param userId 참가자 ID
      * @return 삽입 성공 여부 (true: 성공, false: 실패)
      */
-    public boolean insertParticipant(int sessionId, int user_id);
+    boolean insertParticipant(int sessionId, int user_id);
     
     /**
      * 세션에 문제를 추가하는 메서드
@@ -74,7 +72,7 @@ public interface SessionDao {
      * 세션에 참여하는 참가자를 추가하는 메서드
      * @param user_id 유저ID
      * @param session_id 세션ID
-     * @return
+     * @return 성공 여부 (성공 시 1, 실패 시 -1)
      */
     int addParticipant(int session_id, int user_id);
     
@@ -101,5 +99,20 @@ public interface SessionDao {
      * @return 세션에서 풀 문제들의 problem_id 리스트
      */
     public List<Integer> getProblemsBySessionId(int sessionId);
+    
+    /**
+     * 특정 스터디에 속한 세션 목록을 종료 시간 기준으로 내림차순으로 가져오는 메서드
+     * 
+     * @param studyId 조회할 스터디의 고유 ID
+     * @return 내림차순으로 정렬된 세션 정보 리스트
+     */
+    public List<SessionDto> getSessionsByStudyIdSortedByEndAtDesc(int studyId);
 
+    /**
+     * 특정 세션에 참여한 참가자들의 user_id와 handle 정보를 가져오는 메서드
+     * 
+     * @param sessionId 조회할 세션의 고유 ID
+     * @return 세션에 참여한 참가자들의 UserDto 리스트 (user_id, handle 포함)
+     */
+    public List<UserDto> getSessionParticipantsWithHandle(int sessionId);
 }
