@@ -53,7 +53,7 @@ webapps/
 *.db
 *.db-journal
 # 민감한 설정 파일들 (예: database 연결 정보가 담긴 파일)
-*.properties
+# *.properties 개발 초기 버전에서 잠시 비활성화
 *.env
 
 # 운영체제 관련
