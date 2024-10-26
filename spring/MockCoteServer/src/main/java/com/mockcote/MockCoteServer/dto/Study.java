@@ -13,6 +13,6 @@ public class Study {
     private String name;
     private String description;
     private String code;
-    
     private List<User> studyMembers;
+    
 }

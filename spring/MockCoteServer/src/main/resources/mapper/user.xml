@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mockcote.MockCoteServer.model.mapper.ProblemMapper">
-   
+<mapper namespace="com.mockcote.MockCoteServer.model.mapper.UserMapper">
+	<!-- userId로 유저 정보 조회 -->
+   	<select id="getUserById" parameterType="int" resultType="user">
+   		select *
+   		from users
+   		where user_id = #{userId};
+   	</select>
+   	
+   	<!-- userId로 회원 삭제 -->
+   	<delete id="deleteUserById" parameterType="int">
+   		delete from users
+   		where user_id = #{userId};
+   	</delete>
 </mapper>

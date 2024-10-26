@@ -26,7 +26,7 @@ public class ExampleController {
         
         HttpHeaders headers = new HttpHeaders();
         headers.add("Custom-Header", "CustomHeaderValue");
-
+        System.out.println(headers);
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(responseBody);
     }
 }
