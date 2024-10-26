@@ -1,7 +1,9 @@
 package com.mockcote.MockCoteServer.model.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.mockcote.MockCoteServer.dto.Study;
 import com.mockcote.MockCoteServer.model.mapper.StudyMapper;
@@ -46,21 +48,36 @@ public class StudyServiceImpl implements StudyService {
 //	코드로 스터디 정보 조회
 	@Override
 	public Study getStudyByCode(String code) {
-		return studyMapper.getStudyByCode(code);
+		Study study = studyMapper.getStudyByCode(code);
+//		해당 스터디가 없을 때 예외 처리
+        if (study == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Study not found with invite code");
+        }
+		return study;
 	}
 
 //	스터디ID로 스터디 삭제
 	@Transactional
 	@Override
 	public int deleteStudyById(int studyId) {
-		return studyMapper.deleteStudyById(studyId);
+		int cnt = studyMapper.deleteStudyById(studyId);
+//		해당 스터디가 없을 때 예외 처리
+        if (cnt == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Study not found with ID");
+        }
+		return cnt;
 	}
 
 //	특정 유저 스터디 탈퇴
 	@Transactional
 	@Override
 	public int leaveStudyById(int studyId, int userId) {
-		return studyMapper.leaveStudyById(studyId, userId);
+		int cnt = studyMapper.leaveStudyById(studyId, userId);
+//		탈퇴 실패시 예외 처리
+        if (cnt == 0) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to leave study");
+        }
+		return cnt;
 	}
 
 }
