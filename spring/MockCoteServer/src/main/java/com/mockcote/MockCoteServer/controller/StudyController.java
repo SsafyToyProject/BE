@@ -72,17 +72,17 @@ public class StudyController {
     }
 
 //	스터디 정보 상세 조회
-    @GetMapping("/{study_id}")  // GET: /study/{study_id}
-    public ResponseEntity<Map<String, Object>> getStudyDetail(@PathVariable int study_id) {
+    @GetMapping("/{study-id}")  // GET: /study/{study-id}
+    public ResponseEntity<Map<String, Object>> getStudyDetail(@PathVariable("study-id") int studyId) {
     	
 //    	서비스 호출하여 스터디 정보 조회
-    	Study study = studyService.getStudyById(study_id);
+    	Study study = studyService.getStudyById(studyId);
     	
     	// 스터디 소유자의 handle 조회
         User owner = userService.getUserById(study.getOwnerId());  // owner의 user_id로 handle 조회
 
         // 스터디에 속한 멤버 조회 (User 리스트로 반환)
-        List<Map<String, Object>> studyMembers = studyService.getUsersByStudyId(study_id);
+        List<Map<String, Object>> studyMembers = studyService.getUsersByStudyId(studyId);
     	
 //    	응답 생성
         Map<String, Object> response = new LinkedHashMap<>();
@@ -124,18 +124,18 @@ public class StudyController {
     }
     
 //  스터디ID로 스터디 삭제
-    @DeleteMapping("/{study_id}") // DELETE: /study/{study_id}
-    public ResponseEntity<Void> deleteStudyById(@PathVariable int study_id){
+    @DeleteMapping("/{study-id}") // DELETE: /study/{study-id}
+    public ResponseEntity<Void> deleteStudyById(@PathVariable("study-id") int studyId){
 //    	서비스에 삭제 요청
-    	studyService.deleteStudyById(study_id);
+    	studyService.deleteStudyById(studyId);
     	return ResponseEntity.noContent().build();
     }
     
 //  특정 유저의 스터디 탈퇴
-    @DeleteMapping("/user/{study_id}/{user_id}") // DELETE: /study/user/{study_id}/{user_id}
-    public ResponseEntity<Void> leaveStudyById(@PathVariable int study_id, @PathVariable int user_id){
+    @DeleteMapping("/user/{study-id}/{user-id}") // DELETE: /study/user/{study-id}/{user-id}
+    public ResponseEntity<Void> leaveStudyById(@PathVariable("study-id") int studyId, @PathVariable("user-id") int userId){
 //    	서비스에 탈퇴 요청
-    	studyService.leaveStudyById(study_id, user_id);
+    	studyService.leaveStudyById(studyId, userId);
     	return ResponseEntity.noContent().build();
     }
     
