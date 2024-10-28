@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.http.HttpStatus;
 
 import com.mockcote.MockCoteServer.dto.Study;
 import com.mockcote.MockCoteServer.dto.User;
@@ -45,7 +48,7 @@ public class StudyController {
         
 //		StudyDto 생성
         Study newStudy = new Study(-1, ownerId, name, description, code, null);
-        
+
 // 		서비스 호출하여 스터디 등록
         Study registeredStudy = studyService.addStudy(newStudy);
         
@@ -136,5 +139,31 @@ public class StudyController {
     	return ResponseEntity.noContent().build();
     }
     
+ // POST: /study/signup
+ // 특정 유저의 스터디 가입
+    @PostMapping("/signup")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ResponseEntity<Map<String, Object>> handleSignupStudy(@RequestBody Map<String, Object> payload) {
+        int userId = (Integer) payload.get("user_id");
+        String studyCode = (String) payload.get("study_code");
+
+        Study study = studyService.getStudyByCode(studyCode);
+        if (study == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Study not found with this code.");
+        }
+
+        int isSignedUp = studyService.insertStudyMember(study.getStudyId(), userId);
+        if (isSignedUp == 0) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to signup user to study");
+        }
+
+        //응답 객체 생성
+        Map<String, Object> response = new LinkedHashMap<>();
+        response.put("user_id", userId);
+        response.put("study_code", studyCode);
+        response.put("message", "Successfully joined the study");
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
     
 }

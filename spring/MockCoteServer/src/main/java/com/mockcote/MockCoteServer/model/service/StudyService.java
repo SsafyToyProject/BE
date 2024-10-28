@@ -48,5 +48,8 @@ public interface StudyService {
      * @return int
      */
 	int leaveStudyById(int studyId, int userId);
+	
+	//특정 스터디에 유저 가입
+	int insertStudyMember(int studyId, int userId);
 
 }

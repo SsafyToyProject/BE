@@ -28,7 +28,7 @@
    		using (user_id)
    		where study_id = #{studyId};
    	</select>
-   	
+  
    	<!-- code로 스터디 정보 조회 -->
    	<select id="getStudyByCode" parameterType="string" resultType="study">
    		select study_id, owner_id, name, description
@@ -47,4 +47,10 @@
    		delete from study_members
    		where study_id = #{studyId} and user_id = #{userId};
    	</delete>
+   	
+   	<!-- 스터디 멤버 추가 -->
+    <insert id="insertStudyMember">
+        INSERT INTO study_members (study_id, user_id)
+        VALUES (#{studyId}, #{userId})
+    </insert>
 </mapper>

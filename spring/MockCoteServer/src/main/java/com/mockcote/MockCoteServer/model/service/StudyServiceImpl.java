@@ -38,7 +38,6 @@ public class StudyServiceImpl implements StudyService {
 	    } catch (DataAccessException ex) {
 	        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to add study", ex);
 	    }
-		
 		return study;
 	}
 
@@ -118,6 +117,30 @@ public class StudyServiceImpl implements StudyService {
 //        	내부 에러 (500)
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to leave study", ex);
         }
+	}
+
+	@Override
+	public Study addStudy(Study study) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Study getStudyById(int studyId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Map<String, Object>> getUsersByStudyId(int studyId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int insertStudyMember(int studyId, int userId) {
+		// TODO Auto-generated method stub
+		return studyMapper.insertStudyMember(studyId, userId);
 	}
 
 }
