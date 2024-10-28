@@ -92,4 +92,28 @@ public class StudyServiceImpl implements StudyService {
 		return cnt;
 	}
 
+	@Override
+	public Study addStudy(Study study) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Study getStudyById(int studyId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Map<String, Object>> getUsersByStudyId(int studyId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int insertStudyMember(int studyId, int userId) {
+		// TODO Auto-generated method stub
+		return studyMapper.insertStudyMember(studyId, userId);
+	}
+
 }

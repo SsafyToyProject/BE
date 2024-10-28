@@ -24,5 +24,8 @@ public interface StudyService {
 
 //	특정 유저 스터디 탈퇴
 	int leaveStudyById(int studyId, int userId);
+	
+	//특정 스터디에 유저 가입
+	int insertStudyMember(int studyId, int userId);
 
 }

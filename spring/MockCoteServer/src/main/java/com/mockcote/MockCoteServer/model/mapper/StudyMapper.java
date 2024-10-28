@@ -21,6 +21,7 @@ public interface StudyMapper {
 	// 스터디ID로 스터디 멤버 리스트 받아오기
 	List<User> getUsersByStudyId(int studyId);
 
+
 //	code로 스터디 정보 조회
 	Study getStudyByCode(String code);
 
@@ -29,5 +30,7 @@ public interface StudyMapper {
 
 //	특정 유저의 스터디 탈퇴
 	int leaveStudyById(@Param("studyId") int studyId, @Param("userId") int userId);
-
+	
+	//특정 유저 스터디 가입하기
+	int insertStudyMember(@Param("studyId") int studyId, @Param("userId") int userId);
 }

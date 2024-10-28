@@ -1,56 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper
-	namespace="com.mockcote.MockCoteServer.model.mapper.StudyMapper">
-	<!-- 스터디 추가 -->
-	<insert id="addStudy" parameterType="study"
-		useGeneratedKeys="true" keyProperty="studyId">
-		insert into studies (owner_id,
-		name, description, code)
-		values (#{ownerId}, #{name}, #{description},
-		#{code});
-	</insert>
-
-	<!-- 생성된 studyId로 study_members에 추가  -->
-	<insert id="addStudyIdAndOwnerId" parameterType="map">
-		insert into study_members (study_id, user_id)
-		values (#{studyId}, #{ownerId});
-	</insert>
-
-	<!-- studyId로 상세 조회  -->
-	<select id="getStudyById" parameterType="int" resultType="study">
-		select *
-		from studies
-		where study_id = #{studyId};
-	</select>
-
-	<!-- studyId로 스터디 멤버 리스트 조회  -->
-	<select id="getUsersByStudyId" parameterType="int"
-		resultType="user">
-		select user_id, handle
-		from users join study_members
-		using (user_id)
-		where study_id = #{studyId};
-	</select>
-
-	<!-- code로 스터디 정보 조회 -->
-	<select id="getStudyByCode" parameterType="string"
-		resultType="study">
-		select study_id, owner_id, name, description
-		from studies
-		where code = #{code};
-	</select>
-
-	<!-- studyId로 스터디 삭제 -->
-	<delete id="deleteStudyById" parameterType="int">
-		delete from studies
-		where study_id = #{studyId};
-	</delete>
-
-	<!-- userId로 스터디 탈퇴 -->
-	<delete id="leaveStudyById" parameterType="int">
-		delete from study_members
-		where study_id = #{studyId} and user_id = #{userId};
-	</delete>
+<mapper namespace="com.mockcote.MockCoteServer.model.mapper.StudyMapper">
+	<!-- 스터디 추가  -->
+	<insert id="addStudy" parameterType="study" useGeneratedKeys="true" keyProperty="studyId">
+		insert into studies (owner_id, name, description, code)
+		values (#{ownerId}, #{name}, #{description}, #{code});
+   	</insert>
+   	
+   	<!-- 생성된 studyId로 study_members에 추가 -->
+   	<insert id="addStudyIdAndOwnerId" parameterType="map">
+   		insert into study_members (study_id, user_id)
+        values (#{studyId}, #{ownerId});
+   	</insert>
+   	
+   	
+   	<!-- studyId로 상세 조회 -->
+   	<select id="getStudyById" parameterType="int" resultType="study">
+   		select *
+   		from studies
+   		where study_id = #{studyId};
+   	</select>
+   	
+   	<!--studyId로 스터디 멤버 리스트 조회  -->
+   	<select id="getUsersByStudyId" parameterType="int" resultType="user">
+   		select user_id, handle
+   		from users join study_members
+   		using (user_id)
+   		where study_id = #{studyId};
+   	</select> 
+   	
+   	<!-- code로 스터디 정보 조회 -->
+   	<select id="getStudyByCode" parameterType="string" resultType="study">
+   		select study_id, owner_id, name, description
+   		from studies
+   		where code = #{code};
+   	</select>
+   	
+   	<!-- studyId로 스터디 삭제 -->
+   	<delete id="deleteStudyById" parameterType="int">
+   		delete from studies
+   		where study_id = #{studyId};
+   	</delete>
+   	
+   	<!-- userId로 스터디 탈퇴 -->
+   	<delete id="leaveStudyById" parameterType="int">
+   		delete from study_members
+   		where study_id = #{studyId} and user_id = #{userId};
+   	</delete>
+   	
+   	<!-- 스터디 멤버 추가 -->
+    <insert id="insertStudyMember">
+        INSERT INTO study_members (study_id, user_id)
+        VALUES (#{studyId}, #{userId})
+    </insert>
 </mapper>
