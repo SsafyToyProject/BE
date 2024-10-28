@@ -1,0 +1,114 @@
+package com.mockcote.MockCoteServer.crawler;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mockcote.MockCoteServer.dto.Problem;
+
+@Component
+public class CrawlerImpl implements Crawler {
+	
+	private String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
+	
+	@Override
+	public Set<Integer> getSolvedProblemsByHandle(List<String> handles) {
+		Set<Integer> ret = new HashSet<>();
+		// Define user-agent header
+		for (String handle : handles) {
+			String url = "https://www.acmicpc.net/user/" + handle;
+			try (CloseableHttpClient client = HttpClients.createDefault()) {
+				// Send GET request with headers
+				HttpGet request = new HttpGet(url);
+				request.setHeader("User-Agent", userAgent);
+				CloseableHttpResponse response = client.execute(request);
+
+				// Parse the response body using Jsoup
+				String responseBody = EntityUtils.toString(response.getEntity());
+				Document doc = Jsoup.parse(responseBody);
+
+				// Get the page's text content
+				String text = doc.text();
+
+				// Find the '맞은 문제' section
+				int start = text.indexOf("맞은 문제") + "맞은 문제".length();
+				text = text.substring(start);
+
+				// Find the second occurrence of '맞은 문제'
+				start = text.indexOf("맞은 문제") + "맞은 문제".length();
+				text = text.substring(start);
+
+				// Find the end marker '시도했지만 맞지 못한 문제'
+				int end = text.indexOf("시도했지만 맞지 못한 문제");
+				String problemText = text.substring(0, end);
+
+				// Extract all problem numbers using regex
+				Pattern pattern = Pattern.compile("\\d+");
+				Matcher matcher = pattern.matcher(problemText);
+				List<Integer> problemNumbers = new ArrayList<>();
+				while (matcher.find()) {
+					problemNumbers.add(Integer.parseInt(matcher.group()));
+				}
+
+				// Add to global solved list
+				ret.addAll(problemNumbers);
+				response.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return ret;
+	}
+
+	@Override
+	public List<Problem> executeQuery(String query) {
+	    List<Problem> ret = new ArrayList<>();
+	    int page = 1;
+	    String pathUrl = "https://solved.ac/api/v3/search/problem?query=";
+	    RestTemplate restTemplate = new RestTemplate();  // Spring의 RestTemplate 사용
+	    ObjectMapper objectMapper = new ObjectMapper();  // Jackson ObjectMapper 사용
+	    
+	    while (true) {
+	        try {
+	            // API 요청 보내기
+	            String url = pathUrl + query + "&page=" + page + "&sort=id";
+	            String responseBody = restTemplate.getForObject(url, String.class);
+
+	            // JSON 파싱
+	            JsonNode root = objectMapper.readTree(responseBody);  // JSON을 JsonNode로 파싱
+	            JsonNode items = root.path("items");
+
+	            if (items.isEmpty()) break;  // 항목이 없으면 종료
+
+	            // 문제 리스트 저장
+	            for (JsonNode item : items) {
+	                int problemId = item.path("problemId").asInt();
+	                int level = item.path("level").asInt();
+	                String titleKo = item.path("titleKo").asText();
+	                ret.add(new Problem(problemId, level, titleKo));
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	        page++;
+	    }
+
+	    return ret;
+	}
+
+}
