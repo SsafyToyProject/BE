@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,13 +43,13 @@ public class StudyController {
     	String name = requestBody.get("name");
         String description = requestBody.get("description");
     	
-     // code 생성 (랜덤 문자열 생성)
+// 		code 생성 (랜덤 문자열 생성)
         String code = generateStudyCode();
         
 //		StudyDto 생성
         Study newStudy = new Study(-1, ownerId, name, description, code, null);
-        	
-     // 서비스 호출하여 스터디 등록
+
+// 		서비스 호출하여 스터디 등록
         Study registeredStudy = studyService.addStudy(newStudy);
         
         // 가입 URL 생성
@@ -67,21 +68,21 @@ public class StudyController {
         response.put("code", registeredStudy.getCode());
         response.put("signup_url", signupUrl);
 
-        return ResponseEntity.ok(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
 //	스터디 정보 상세 조회
-    @GetMapping("/{studyId}")  // GET: /study/{studyID}
-    public ResponseEntity<Map<String, Object>> getStudyDetail(@PathVariable int studyId) {
+    @GetMapping("/{study_id}")  // GET: /study/{study_id}
+    public ResponseEntity<Map<String, Object>> getStudyDetail(@PathVariable int study_id) {
     	
 //    	서비스 호출하여 스터디 정보 조회
-    	Study study = studyService.getStudyById(studyId);
+    	Study study = studyService.getStudyById(study_id);
     	
     	// 스터디 소유자의 handle 조회
         User owner = userService.getUserById(study.getOwnerId());  // owner의 user_id로 handle 조회
 
         // 스터디에 속한 멤버 조회 (User 리스트로 반환)
-        List<Map<String, Object>> studyMembers = studyService.getUsersByStudyId(studyId);
+        List<Map<String, Object>> studyMembers = studyService.getUsersByStudyId(study_id);
     	
 //    	응답 생성
         Map<String, Object> response = new LinkedHashMap<>();
@@ -123,18 +124,18 @@ public class StudyController {
     }
     
 //  스터디ID로 스터디 삭제
-    @DeleteMapping("/{studyId}") // DELETE: /study/{studyId}
-    public ResponseEntity<Void> deleteStudyById(@PathVariable int studyId){
+    @DeleteMapping("/{study_id}") // DELETE: /study/{study_id}
+    public ResponseEntity<Void> deleteStudyById(@PathVariable int study_id){
 //    	서비스에 삭제 요청
-    	studyService.deleteStudyById(studyId);
+    	studyService.deleteStudyById(study_id);
     	return ResponseEntity.noContent().build();
     }
     
 //  특정 유저의 스터디 탈퇴
-    @DeleteMapping("/user/{studyId}/{userId}") // DELETE: /study/user/{studyId}/{userId}
-    public ResponseEntity<Void> leaveStudyById(@PathVariable int studyId, @PathVariable int userId){
+    @DeleteMapping("/user/{study_id}/{user_id}") // DELETE: /study/user/{study_id}/{user_id}
+    public ResponseEntity<Void> leaveStudyById(@PathVariable int study_id, @PathVariable int user_id){
 //    	서비스에 탈퇴 요청
-    	studyService.leaveStudyById(studyId, userId);
+    	studyService.leaveStudyById(study_id, user_id);
     	return ResponseEntity.noContent().build();
     }
     
