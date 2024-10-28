@@ -1,5 +1,8 @@
 package com.mockcote.MockCoteServer.model.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,6 +81,30 @@ public class StudyServiceImpl implements StudyService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to leave study");
         }
 		return cnt;
+	}
+
+	@Override
+	public Study addStudy(Study study) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Study getStudyById(int studyId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Map<String, Object>> getUsersByStudyId(int studyId) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean insertStudyMember(int studyId, int userId) {
+		// TODO Auto-generated method stub
+		return studyMapper.insertStudyMember(studyId, userId) > 0;
 	}
 
 }
