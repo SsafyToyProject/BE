@@ -7,18 +7,18 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mockcote.MockCoteServer.dto.Problem;
 
 @Component
@@ -80,28 +80,26 @@ public class CrawlerImpl implements Crawler {
 	    List<Problem> ret = new ArrayList<>();
 	    int page = 1;
 	    String pathUrl = "https://solved.ac/api/v3/search/problem?query=";
-	    RestTemplate restTemplate = new RestTemplate();  // Spring의 RestTemplate 사용
-	    ObjectMapper objectMapper = new ObjectMapper();  // Jackson ObjectMapper 사용
-	    
+
 	    while (true) {
-	        try {
-	            // API 요청 보내기
-	            String url = pathUrl + query + "&page=" + page + "&sort=id";
-	            String responseBody = restTemplate.getForObject(url, String.class);
+	        try (CloseableHttpClient client = HttpClients.createDefault()) {
+	            HttpGet request = new HttpGet(pathUrl + query + "&page=" + page + "&sort=id");
+	            HttpResponse response = client.execute(request);
+	            String responseBody = EntityUtils.toString(response.getEntity());
 
-	            // JSON 파싱
-	            JsonNode root = objectMapper.readTree(responseBody);  // JSON을 JsonNode로 파싱
-	            JsonNode items = root.path("items");
+	            // Parse the JSON response
+	            JSONObject jsonResponse = new JSONObject(responseBody);
 
-	            if (items.isEmpty()) break;  // 항목이 없으면 종료
+	            // Parse items
+	            JSONArray items = jsonResponse.getJSONArray("items");
+	            if (items.length() == 0) break;
 
-	            // 문제 리스트 저장
-	            for (JsonNode item : items) {
-	                int problemId = item.path("problemId").asInt();
-	                int level = item.path("level").asInt();
-	                String titleKo = item.path("titleKo").asText();
-	                ret.add(new Problem(problemId, level, titleKo));
+	            // Store problemDto in an array
+	            for (int i = 0; i < items.length(); i++) {
+	                JSONObject item = items.getJSONObject(i);
+	                ret.add(new Problem(item.getInt("problemId"), item.getInt("level"), item.getString("titleKo")));
 	            }
+
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	        }

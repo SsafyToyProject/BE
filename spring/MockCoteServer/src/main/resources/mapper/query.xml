@@ -1,6 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mockcote.MockCoteServer.model.mapper.ProblemMapper">
-   
+<mapper
+	namespace="com.mockcote.MockCoteServer.model.mapper.QueryMapper">
+	
+	<select id="searchAllWithProblems" resultType="query">
+		SELECT q.query_id,
+		q.title, q.query_str, q.num_problems, c.problem_id
+		FROM queries q
+		LEFT
+		JOIN candidates c ON q.query_id = c.query_id
+	</select>
+	
+	<select id="searchAllWithoutProblems" resultType="query">
+		SELECT
+		query_id, title, query_str, num_problems
+		FROM queries
+	</select>
+	
+	<!-- queries 테이블에 새로운 쿼리 삽입 -->
+	<insert id="insertQuery"
+		parameterType="query"
+		useGeneratedKeys="true" keyProperty="queryId">
+		INSERT INTO queries (title, query_str, num_problems)
+		VALUES (#{title}, #{queryStr}, #{numProblems});
+	</insert>
+
+	<!-- candidates 테이블에 문제 삽입 -->
+	<insert id="insertCandidates"
+		parameterType="query">
+		INSERT INTO candidates (query_id, problem_id)
+		VALUES
+		<foreach collection="problems" item="problemId" separator=",">
+			(#{queryId}, #{problemId})
+		</foreach>
+	</insert>
+
+	<!-- ResultMap 설정 (쿼리와 문제들을 매핑) -->
+	<resultMap id="queryWithProblems"
+		type="com.mockcote.MockCoteServer.dto.Query">
+		<id property="queryId" column="query_id" />
+		<result property="title" column="title" />
+		<result property="queryStr" column="query_str" />
+		<result property="numProblems" column="num_problems" />
+		<collection property="problems" ofType="java.lang.Integer">
+			<result column="problem_id" />
+		</collection>
+	</resultMap>
 </mapper>
