@@ -151,8 +151,8 @@ public class StudyController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Study not found with this code.");
         }
 
-        boolean isSignedUp = studyService.insertStudyMember(study.getStudyId(), userId);
-        if (!isSignedUp) {
+        int isSignedUp = studyService.insertStudyMember(study.getStudyId(), userId);
+        if (isSignedUp == 0) {
             throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to signup user to study");
         }
 

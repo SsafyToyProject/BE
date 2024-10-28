@@ -26,6 +26,6 @@ public interface StudyService {
 	int leaveStudyById(int studyId, int userId);
 	
 	//특정 스터디에 유저 가입
-	boolean insertStudyMember(int studyId, int userId);
+	int insertStudyMember(int studyId, int userId);
 
 }

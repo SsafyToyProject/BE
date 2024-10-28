@@ -102,9 +102,9 @@ public class StudyServiceImpl implements StudyService {
 	}
 
 	@Override
-	public boolean insertStudyMember(int studyId, int userId) {
+	public int insertStudyMember(int studyId, int userId) {
 		// TODO Auto-generated method stub
-		return studyMapper.insertStudyMember(studyId, userId) > 0;
+		return studyMapper.insertStudyMember(studyId, userId);
 	}
 
 }
