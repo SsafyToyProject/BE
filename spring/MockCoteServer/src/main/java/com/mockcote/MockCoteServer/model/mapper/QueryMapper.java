@@ -2,7 +2,9 @@ package com.mockcote.MockCoteServer.model.mapper;
 
 import java.util.List;
 
+import com.mockcote.MockCoteServer.dto.Problem;
 import com.mockcote.MockCoteServer.dto.Query;
+import com.mockcote.MockCoteServer.dto.Session;
 
 public interface QueryMapper {
 	
@@ -31,4 +33,18 @@ public interface QueryMapper {
      * @return list query
      */
     List<Query> searchAllWithoutProblems();
+    
+    /**
+     * 쿼리에 포함된 문제 리스트 조회
+     * @param query_id
+     * @return problem list
+     */
+    List<Problem> searchCandidates(int query_id);
+    
+    /**
+     * Session_problems 테이블에 problems 삽입
+     * @param session
+     * @return affected row
+     */
+    int insertSessionProblems(Session session);
 }

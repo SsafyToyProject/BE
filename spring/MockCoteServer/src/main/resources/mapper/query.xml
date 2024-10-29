@@ -3,7 +3,7 @@
 
 <mapper
 	namespace="com.mockcote.MockCoteServer.model.mapper.QueryMapper">
-	
+
 	<select id="searchAllWithProblems" resultType="query">
 		SELECT q.query_id,
 		q.title, q.query_str, q.num_problems, c.problem_id
@@ -11,24 +11,24 @@
 		LEFT
 		JOIN candidates c ON q.query_id = c.query_id
 	</select>
-	
+
 	<select id="searchAllWithoutProblems" resultType="query">
 		SELECT
 		query_id, title, query_str, num_problems
 		FROM queries
 	</select>
-	
+
 	<!-- queries 테이블에 새로운 쿼리 삽입 -->
-	<insert id="insertQuery"
-		parameterType="query"
+	<insert id="insertQuery" parameterType="query"
 		useGeneratedKeys="true" keyProperty="queryId">
-		INSERT INTO queries (title, query_str, num_problems)
-		VALUES (#{title}, #{queryStr}, #{numProblems});
+		INSERT INTO queries (title,
+		query_str, num_problems)
+		VALUES (#{title}, #{queryStr},
+		#{numProblems});
 	</insert>
 
 	<!-- candidates 테이블에 문제 삽입 -->
-	<insert id="insertCandidates"
-		parameterType="query">
+	<insert id="insertCandidates" parameterType="query">
 		INSERT INTO candidates (query_id, problem_id)
 		VALUES
 		<foreach collection="problems" item="problemId" separator=",">
@@ -47,4 +47,21 @@
 			<result column="problem_id" />
 		</collection>
 	</resultMap>
+
+	<select id="searchCandidates" parameterType="int"
+		resultType="problem">
+		SELECT p.problem_id, p.difficulty, p.title
+		FROM problems p
+		INNER JOIN candidates c ON p.problem_id = c.problem_id
+		WHERE c.query_id
+		= #{query_id}
+	</select>
+
+	<insert id="insertSessionProblems" parameterType="session">
+		INSERT INTO session_problems (session_id, problem_id)
+		VALUES
+		<foreach collection="problems" item="problemId" separator=",">
+			(#{session_id}, #{problemId})
+		</foreach>
+	</insert>
 </mapper>

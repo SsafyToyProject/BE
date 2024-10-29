@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mockcote.MockCoteServer.model.mapper.ProblemMapper">
-   
+<mapper
+	namespace="com.mockcote.MockCoteServer.model.mapper.SessionTrackerMapper">
+
+	<insert id="insertSessionTrackers" parameterType="session">
+		INSERT INTO session_trackers (session_id, user_id, problem_id)
+		VALUES
+		<foreach collection="userIds" item="userId">
+			<foreach collection="problemIds" item="problemId"
+				separator=",">
+				(#{session_id}, #{userId}, #{problemId})
+			</foreach>
+		</foreach>
+	</insert>
+
 </mapper>
