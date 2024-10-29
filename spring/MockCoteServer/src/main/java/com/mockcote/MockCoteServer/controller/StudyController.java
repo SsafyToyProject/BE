@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.http.HttpStatus;
 
 import com.mockcote.MockCoteServer.dto.Study;
 import com.mockcote.MockCoteServer.dto.User;
@@ -37,21 +36,13 @@ public class StudyController {
 	
 //	스터디 생성
     @PostMapping // POST: /study
-    public ResponseEntity<Map<String, Object>> handleRegisterStudy(@RequestBody Map<String, String> requestBody, UriComponentsBuilder uriBuilder) {
-    	
-//    	요청 값 추출
-    	int ownerId = Integer.parseInt(requestBody.get("owner_id"));
-    	String name = requestBody.get("name");
-        String description = requestBody.get("description");
+    public ResponseEntity<Map<String, Object>> handleRegisterStudy(@RequestBody Study study, UriComponentsBuilder uriBuilder) {
     	
 // 		code 생성 (랜덤 문자열 생성)
-        String code = generateStudyCode();
-        
-//		StudyDto 생성
-        Study newStudy = new Study(-1, ownerId, name, description, code, null);
+        study.setCode(generateStudyCode()); 
 
 // 		서비스 호출하여 스터디 등록
-        Study registeredStudy = studyService.addStudy(newStudy);
+        Study registeredStudy = studyService.addStudy(study);
         
         // 가입 URL 생성
         String signupUrl = uriBuilder

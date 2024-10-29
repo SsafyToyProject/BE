@@ -30,14 +30,8 @@ public class StudyServiceImpl implements StudyService {
 		if(study.getName() == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Study name is null");
 		}
-//		스터디 추가 실패시 (500)
-		try {
-	        studyMapper.addStudy(study);
-	        studyMapper.addStudyIdAndOwnerId(study.getStudyId(), study.getOwnerId());
-
-	    } catch (DataAccessException ex) {
-	        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to add study", ex);
-	    }
+	    studyMapper.addStudy(study);
+	    studyMapper.addStudyIdAndOwnerId(study.getStudyId(), study.getOwnerId());
 		return study;
 	}
 
@@ -78,6 +72,8 @@ public class StudyServiceImpl implements StudyService {
 	@Override
 	public Study getStudyByCode(String code) {
 		Study study = studyMapper.getStudyByCode(code);
+//		Optional<Study> optStudy = Optional.ofNullable(study);
+//		optStudy.orElseThrow(()-> new ResponseStatusException());
 		//		해당 스터디가 없으면 (404)
 		if (study == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Study not found with invite code");

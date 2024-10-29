@@ -22,13 +22,13 @@ public class UserController {
 	private final UserService userService;
 	
 //	유저Id로 회원 정보 조회
-	@GetMapping("/{user_id}") //GET: /user/{user_id}
-	public ResponseEntity<Map<String, Object>> getUserById(@PathVariable int user_id) {
+	@GetMapping("/{user-id}") //GET: /user/{user-id}
+	public ResponseEntity<Map<String, Object>> getUserById(@PathVariable("user-id") int userId) {
 //		응답객체
 		Map<String, Object> response = new LinkedHashMap<>();
 		
 //		서비스에 유저 정보 요청
-		User user = userService.getUserById(user_id);
+		User user = userService.getUserById(userId);
 		
 //		응답객체 생성
 		response.put("user_id", user.getUserId());
@@ -38,11 +38,11 @@ public class UserController {
 		return ResponseEntity.ok(response);
 	}
 	
-//	유저Id로 회원 탈퇴 //DELETE: /user/{user_id}
-	@DeleteMapping("/{user_id}")
-	public ResponseEntity<Void> deleteUserById(@PathVariable int user_id){
+//	유저Id로 회원 탈퇴 //DELETE: /user/{user-id}
+	@DeleteMapping("/{user-id}")
+	public ResponseEntity<Void> deleteUserById(@PathVariable("user-id") int userId){
 //		서비스에 유저 탈퇴 요청
-		userService.deleteUserById(user_id);
+		userService.deleteUserById(userId);
 		return ResponseEntity.noContent().build();
 	}
 	
