@@ -32,4 +32,7 @@ public interface StudyMapper {
 	
 	//특정 유저 스터디 가입하기
 	int insertStudyMember(@Param("studyId") int studyId, @Param("userId") int userId);
+	
+	//사용자 ID로 사용자가 속한 스터디 목록 조회
+	List<Study> getStudiesByUserId(@Param("userId") int userId);
 }

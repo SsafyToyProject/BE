@@ -1,5 +1,9 @@
 package com.mockcote.MockCoteServer.model.mapper;
 
+import java.util.List;
+
+import org.apache.ibatis.annotations.Param;
+
 import com.mockcote.MockCoteServer.dto.User;
 
 public interface UserMapper {
@@ -9,5 +13,12 @@ public interface UserMapper {
 
 //	userId로 회원 삭제 요청
 	int deleteUserById(int userId);
+	
+	/**
+	 * user_id 리스트를 대응하는 User 리스트로 변환
+	 * @param userIds list
+	 * @return User list
+	 */
+	List<User> getUsersByUserIds(@Param("userIds") List<Integer> userIds);
 
 }
