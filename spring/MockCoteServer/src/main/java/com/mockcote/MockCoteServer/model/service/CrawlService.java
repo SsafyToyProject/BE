@@ -15,13 +15,6 @@ public interface CrawlService {
 	Problem searchProblemById(int problemId);
 	
 	/**
-	 * 문제 삽입
-	 * @param problem
-	 * @return affected row
-	 */
-	int insertProblem(Problem problem);
-	
-	/**
 	 * 쿼리를 크롤링하여 쿼리정보 DB에 업데이트
 	 * @param query
 	 * @return 완성된 query

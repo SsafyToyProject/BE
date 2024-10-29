@@ -1,5 +1,7 @@
 package com.mockcote.MockCoteServer.model.mapper;
 
+import java.util.List;
+
 import com.mockcote.MockCoteServer.dto.Problem;
 
 public interface ProblemMapper {
@@ -13,8 +15,8 @@ public interface ProblemMapper {
 	
 	/**
 	 * 문제 삽입. 이미 존재하는 문제라면 난이도만 업데이트
-	 * @param problem
+	 * @param problem list
 	 * @return affected row
 	 */
-	int insertProblem(Problem problem);
+	int insertProblems(List<Problem> problem);
 }

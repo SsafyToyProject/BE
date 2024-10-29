@@ -31,8 +31,8 @@
 	<insert id="insertCandidates" parameterType="query">
 		INSERT INTO candidates (query_id, problem_id)
 		VALUES
-		<foreach collection="problems" item="problemId" separator=",">
-			(#{queryId}, #{problemId})
+		<foreach collection="problems" item="problem" separator=",">
+			(#{queryId}, #{problem.problemId})
 		</foreach>
 	</insert>
 

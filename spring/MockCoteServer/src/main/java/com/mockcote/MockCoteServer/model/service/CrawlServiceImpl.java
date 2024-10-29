@@ -45,11 +45,6 @@ public class CrawlServiceImpl implements CrawlService {
 		return ret;
 	}
 
-	@Override
-	public int insertProblem(Problem problem) {
-		return problemMapper.insertProblem(problem);
-	}
-	
 	@Transactional
 	@Override
 	public Query executeQuery(Query query) {
@@ -59,16 +54,12 @@ public class CrawlServiceImpl implements CrawlService {
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Crawling error");
 		
 		//Problems table 삽입
-		List<Integer> problems = new ArrayList<>();
-		for(Problem p : crawled_problems) {
-			problemMapper.insertProblem(p);
-			problems.add(p.getProblemId());
-		}
+		problemMapper.insertProblems(crawled_problems);
 		
 		//queries table 삽입
+		query.setNumProblems(crawled_problems.size());
+		query.setProblems(crawled_problems);
 		queryMapper.insertQuery(query); //queryId 할당됨
-		query.setNumProblems(problems.size());
-		query.setProblems(problems);
 		
 		//candidates table 삽입
 		queryMapper.insertCandidates(query);
