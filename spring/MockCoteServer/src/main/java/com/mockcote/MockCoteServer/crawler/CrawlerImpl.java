@@ -20,6 +20,7 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Component;
 
 import com.mockcote.MockCoteServer.dto.Problem;
+import com.mockcote.MockCoteServer.dto.User;
 
 @Component
 public class CrawlerImpl implements Crawler {
@@ -27,11 +28,11 @@ public class CrawlerImpl implements Crawler {
 	private String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
 	
 	@Override
-	public Set<Integer> getSolvedProblemsByHandle(List<String> handles) {
+	public Set<Integer> getSolvedProblemsByUsers(List<User> users) {
 		Set<Integer> ret = new HashSet<>();
 		// Define user-agent header
-		for (String handle : handles) {
-			String url = "https://www.acmicpc.net/user/" + handle;
+		for (User user : users) {
+			String url = "https://www.acmicpc.net/user/" + user.getHandle();
 			try (CloseableHttpClient client = HttpClients.createDefault()) {
 				// Send GET request with headers
 				HttpGet request = new HttpGet(url);

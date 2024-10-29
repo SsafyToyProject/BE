@@ -93,15 +93,13 @@ public class CrawlServiceImpl implements CrawlService {
 			//참가자 리스트 조회
 			List<Integer> participant_ids = sessionMapper.getParticipants(session.getSessionId());
 			List<User> participants = userMapper.getUsersByUserIds(participant_ids);
-			List<String> handles = new ArrayList<>();
-			for(User user : participants) handles.add(user.getHandle());
-			if(handles.size() == 0) {
+			if(participants.size() == 0) {
 				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"No participants exists for session");
 			}
 			session.setSessionParticipants(participants);
 			
 			//solved 리스트 크롤링
-			Set<Integer> solved = crawler.getSolvedProblemsByHandle(handles);
+			Set<Integer> solved = crawler.getSolvedProblemsByUsers(participants);
 			log.info("solved len : {}", solved.size());
 			
 			//problemPool 파싱
