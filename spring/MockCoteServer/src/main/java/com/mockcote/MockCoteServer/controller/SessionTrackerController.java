@@ -19,10 +19,11 @@ import lombok.RequiredArgsConstructor;
 public class SessionTrackerController {
     private final SessionTrackerService sessionTrackerService;
 
-    @GetMapping("/info/{session_id}/{user_id}/{problem_id}")
-    public ResponseEntity<SessionTracker> getTrackerInfo(@PathVariable("session_id") int sessionId,
-                                                         @PathVariable("user_id") int userId,
-                                                         @PathVariable("problem_id") int problemId) {
+  //GET: /tracker/info/{session-id}/{user-id}/{problem-id}
+    @GetMapping("/info/{session-id}/{user-id}/{problem-id}")
+    public ResponseEntity<SessionTracker> getTrackerInfo(@PathVariable("session-id") int sessionId,
+                                                         @PathVariable("user-id") int userId,
+                                                         @PathVariable("problem-id") int problemId) {
         SessionTracker tracker = sessionTrackerService.getSessionTracker(sessionId, userId, problemId);
         if (tracker == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No tracker found for the provided ids.");

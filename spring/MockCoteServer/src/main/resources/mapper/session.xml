@@ -3,4 +3,11 @@
 
 <mapper namespace="com.mockcote.MockCoteServer.model.mapper.SessionMapper">
    
+   <!-- 특정 스터디의 모든 세션 정보 조회 -->
+   <select id="findSessionsByStudyId" resultType="session">
+        SELECT session_id, study_id, query_id, start_at, end_at, problem_pool
+        FROM sessions
+        WHERE study_id = #{studyId}
+        ORDER BY end_at DESC
+    </select>
 </mapper>
