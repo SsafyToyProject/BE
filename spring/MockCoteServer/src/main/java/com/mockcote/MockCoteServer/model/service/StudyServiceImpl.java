@@ -121,12 +121,38 @@ public class StudyServiceImpl implements StudyService {
 
 	@Override
 	public int insertStudyMember(int studyId, int userId) {
-		return studyMapper.insertStudyMember(studyId, userId);
+	    // 입력 값 검증
+	    if (studyId <= 0 || userId <= 0) {
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid study ID or user ID");
+	    }
+	    try {
+	        int rowsAffected = studyMapper.insertStudyMember(studyId, userId);
+	        if (rowsAffected == 0) {
+	            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "No changes made. User may already be in study or study does not exist.");
+	        }
+	        return rowsAffected;
+	    } catch (DataAccessException ex) {
+	        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to insert study member", ex);
+	    }
 	}
 
 	@Override
 	public List<Study> getStudiesByUserId(int userId) {
-		return studyMapper.getStudiesByUserId(userId);
+	    // 입력 값 검증
+	    if (userId <= 0) {
+	        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid user ID");
+	    }
+	    try {
+	        List<Study> studies = studyMapper.getStudiesByUserId(userId);
+	        if (studies.isEmpty()) {
+	            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No studies found for user ID: " + userId);
+	        }
+	        return studies;
+	    } catch (DataAccessException ex) {
+	        // 로깅 필요 시 여기에 추가
+	        throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to fetch studies for user", ex);
+	    }
 	}
+
 
 }
