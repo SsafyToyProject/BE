@@ -121,8 +121,12 @@ public class StudyServiceImpl implements StudyService {
 
 	@Override
 	public int insertStudyMember(int studyId, int userId) {
-		// TODO Auto-generated method stub
 		return studyMapper.insertStudyMember(studyId, userId);
+	}
+
+	@Override
+	public List<Study> getStudiesByUserId(int userId) {
+		return studyMapper.getStudiesByUserId(userId);
 	}
 
 }

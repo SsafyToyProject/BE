@@ -49,7 +49,20 @@ public interface StudyService {
      */
 	int leaveStudyById(int studyId, int userId);
 	
-	//특정 스터디에 유저 가입
+	/**
+	 * 특정 스터디에 유저 가입
+	 * @param studyId
+	 * @param userId
+	 * @return
+	 */
 	int insertStudyMember(int studyId, int userId);
+	
+	/**
+	 * userId로 특정 유저가 가입한 모든 스터디 조회
+	 * @param userId
+	 * @return
+	 */
+	public List<Study> getStudiesByUserId(int userId);
+	
 
 }
