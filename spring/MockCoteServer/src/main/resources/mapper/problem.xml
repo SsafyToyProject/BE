@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mockcote.MockCoteServer.model.mapper.ProblemMapper">
-   	<select id="searchProblemById" parameterType="int" resultType="problem">
-   		select problem_id, difficulty, title
-   		from problems
-   		where problem_id=#{problemId};
-   	</select>
-   	
-   	<insert id="insertProblem" parameterType="problem">
-        insert into problems (problem_id, difficulty, title)
-        values (#{problemId}, #{difficulty}, #{title})
-        ON DUPLICATE KEY UPDATE
-        	difficulty = VALUES(difficulty);
-   	</insert>
+<mapper
+	namespace="com.mockcote.MockCoteServer.model.mapper.ProblemMapper">
+	<select id="searchProblemById" parameterType="int"
+		resultType="problem">
+		select problem_id, difficulty, title
+		from problems
+		where problem_id=#{problemId};
+	</select>
+
+	<insert id="insertProblems" parameterType="list">
+		INSERT INTO problems (problem_id, difficulty, title)
+		VALUES
+		<foreach collection="list" item="problem" separator=",">
+			(#{problem.problemId}, #{problem.difficulty}, #{problem.title})
+		</foreach>
+		ON DUPLICATE KEY UPDATE
+		difficulty = VALUES(difficulty),
+		title = VALUES(title);
+	</insert>
 </mapper>

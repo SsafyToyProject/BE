@@ -15,13 +15,6 @@ public interface CrawlService {
 	Problem searchProblemById(int problemId);
 	
 	/**
-	 * 문제 삽입
-	 * @param problem
-	 * @return affected row
-	 */
-	int insertProblem(Problem problem);
-	
-	/**
 	 * 쿼리를 크롤링하여 쿼리정보 DB에 업데이트
 	 * @param query
 	 * @return 완성된 query
@@ -33,4 +26,16 @@ public interface CrawlService {
 	 * @return list query
 	 */
 	List<Query> searchQueriesWithoutProblems();
+	
+	/**
+	 * 시작 시간이 3분 미만으로 남은 세션들에 문제를 선정하고,
+	 * 참가자와 문제에 해당하는 sessionTracker를 삽입함
+	 */
+	void triggerSession();
+	
+	/**
+	 * 진행중인 세션들의 문제들을 실시간으로 크롤링하여
+	 * 문제 풀이 상태를 session Tracker에 업데이트
+	 */
+	void liveTrack();
 }

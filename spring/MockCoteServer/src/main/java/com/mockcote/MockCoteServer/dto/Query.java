@@ -13,5 +13,5 @@ public class Query {
     private String title;
     private String queryStr;
     private int numProblems;
-    private List<Integer> problems;
+    private List<Problem> problems;
 }

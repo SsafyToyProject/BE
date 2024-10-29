@@ -1,5 +1,6 @@
 package com.mockcote.MockCoteServer.crawler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,9 +18,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
+import com.mockcote.MockCoteServer.dto.CrawledRecord;
 import com.mockcote.MockCoteServer.dto.Problem;
+import com.mockcote.MockCoteServer.dto.User;
 
 @Component
 public class CrawlerImpl implements Crawler {
@@ -27,11 +32,11 @@ public class CrawlerImpl implements Crawler {
 	private String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3";
 	
 	@Override
-	public Set<Integer> getSolvedProblemsByHandle(List<String> handles) {
+	public Set<Integer> getSolvedProblemsByUsers(List<User> users) {
 		Set<Integer> ret = new HashSet<>();
 		// Define user-agent header
-		for (String handle : handles) {
-			String url = "https://www.acmicpc.net/user/" + handle;
+		for (User user : users) {
+			String url = "https://www.acmicpc.net/user/" + user.getHandle();
 			try (CloseableHttpClient client = HttpClients.createDefault()) {
 				// Send GET request with headers
 				HttpGet request = new HttpGet(url);
@@ -108,5 +113,39 @@ public class CrawlerImpl implements Crawler {
 
 	    return ret;
 	}
+
+	@Override
+	public List<CrawledRecord> crawlTrackers(int problem_id) {
+		List<CrawledRecord> ret = new ArrayList<>();
+		String url = "https://www.acmicpc.net/status?problem_id=" + problem_id
+		+ "&user_id=&language_id=-1&result_id=4&from_problem=1";
+		try (CloseableHttpClient client = HttpClients.createDefault()) {
+			// Send GET request with headers
+			HttpGet request = new HttpGet(url);
+			request.setHeader("User-Agent", userAgent);
+			HttpResponse response = client.execute(request);
+
+			// Parse the response body using Jsoup
+			String responseBody = EntityUtils.toString(response.getEntity());
+			
+			// Parse to CrawledRecord
+			Document doc = Jsoup.parse(responseBody);
+			Element table = doc.getElementById("status-table");
+			Elements rows = table.select("tbody tr");
+			for(Element row : rows) {
+				//each row represent one result
+				int submission_id = Integer.parseInt(row.select("td").get(0).text());
+				String handle = row.select("td").get(1).text();
+				String result = row.select("td").get(3).text();
+				int performance = Integer.parseInt(row.select("td").get(5).text().replaceAll("[^0-9]", ""));
+				String language = row.select("td").get(6).text();
+				ret.add(new CrawledRecord(submission_id,handle,result,performance,language));
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return ret;
+	}
+	
 
 }

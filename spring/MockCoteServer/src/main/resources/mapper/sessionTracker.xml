@@ -1,12 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.mockcote.MockCoteServer.model.mapper.SessionTrackerMapper">
-   
-   
-   <select id="findSessionTracker" resultType="sessionTracker">
-        SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description
-        FROM session_trackers
-        WHERE session_id = #{sessionId} AND user_id = #{userId} AND problem_id = #{problemId}
-    </select>
+<mapper
+	namespace="com.mockcote.MockCoteServer.model.mapper.SessionTrackerMapper">
+
+	<insert id="insertSessionTrackers"
+		parameterType="com.mockcote.MockCoteServer.dto.Session">
+		INSERT INTO session_trackers (session_id, user_id, problem_id)
+		VALUES
+		<foreach collection="sessionParticipants" item="user"
+			separator=",">
+			<foreach collection="sessionProblems" item="problem"
+				separator=",">
+				(#{sessionId}, #{user.userId}, #{problem.problemId})
+			</foreach>
+		</foreach>
+	</insert>
+
+	<select id="findSessionTracker" resultType="sessionTracker">
+		SELECT session_id, user_id, problem_id, solved_at, performance, language,
+		code_link, description
+		FROM session_trackers
+		WHERE session_id = #{sessionId} AND user_id = #{userId} AND problem_id =
+		#{problemId}
+	</select>
+
+	<update id="updateSessionTracker" parameterType="sessionTracker">
+		UPDATE session_trackers
+		SET
+		solved_at = NOW(),
+		performance = #{performance},
+		language = #{language},
+		code_link = #{codeLink},
+		description = #{description}
+		WHERE
+		session_id = #{sessionId} AND
+		user_id = #{userId} AND
+		problem_id = #{problemId}
+	</update>
+
 </mapper>
