@@ -32,4 +32,10 @@ public interface CrawlService {
 	 * 참가자와 문제에 해당하는 sessionTracker를 삽입함
 	 */
 	void triggerSession();
+	
+	/**
+	 * 진행중인 세션들의 문제들을 실시간으로 크롤링하여
+	 * 문제 풀이 상태를 session Tracker에 업데이트
+	 */
+	void liveTrack();
 }

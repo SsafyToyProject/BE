@@ -16,11 +16,27 @@
 			</foreach>
 		</foreach>
 	</insert>
-	
+
 	<select id="findSessionTracker" resultType="sessionTracker">
-        SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description
-        FROM session_trackers
-        WHERE session_id = #{sessionId} AND user_id = #{userId} AND problem_id = #{problemId}
-    </select>
+		SELECT session_id, user_id, problem_id, solved_at, performance, language,
+		code_link, description
+		FROM session_trackers
+		WHERE session_id = #{sessionId} AND user_id = #{userId} AND problem_id =
+		#{problemId}
+	</select>
+
+	<update id="updateSessionTracker" parameterType="sessionTracker">
+		UPDATE session_trackers
+		SET
+		solved_at = NOW(),
+		performance = #{performance},
+		language = #{language},
+		code_link = #{codeLink},
+		description = #{description}
+		WHERE
+		session_id = #{sessionId} AND
+		user_id = #{userId} AND
+		problem_id = #{problemId}
+	</update>
 
 </mapper>

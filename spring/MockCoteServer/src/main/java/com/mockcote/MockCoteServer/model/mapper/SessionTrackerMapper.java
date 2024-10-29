@@ -15,4 +15,10 @@ public interface SessionTrackerMapper {
 	
 	SessionTracker findSessionTracker(@Param("sessionId") int sessionId, @Param("userId") int userId, @Param("problemId") int problemId);
 	
+	/**
+	 * SessionTracker 정보 업데이트
+	 * @param tracker
+	 * @return affected row
+	 */
+	int updateSessionTracker(SessionTracker sessionTracker);
 }

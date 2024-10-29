@@ -8,6 +8,12 @@
         FROM sessions
         WHERE NOW() BETWEEN DATE_SUB(start_at, INTERVAL 3 MINUTE) AND start_at
     </select>
+    
+    <select id="searchActiveSessions" resultType="session">
+    	SELECT session_id, study_id, query_id, start_at, end_at, problem_pool
+        FROM sessions
+        WHERE NOW() BETWEEN start_at AND end_at;
+    </select>
 
     <select id="getProblemCount" parameterType="int" resultType="int">
         SELECT count(problem_id)
@@ -20,5 +26,10 @@
     	FROM session_participants
     	WHERE session_id = ${sessionId}
     </select>
-
+	
+	<select id="getSessionProblemIds" parameterType="int" resultType="int">
+		SELECT problem_id
+		FROM session_problems
+		WHERE session_id=#{sessionId}
+	</select>
 </mapper>

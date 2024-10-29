@@ -12,6 +12,12 @@ public interface SessionMapper {
 	List<Session> searchReadySessions();
 	
 	/**
+	 * 현재 진행중인 세션 조회
+	 * @return session list
+	 */
+	List<Session> searchActiveSessions();
+	
+	/**
 	 * session에 할당된 문제의 갯수 조회
 	 * @param session_id
 	 * @return 할당된 문제의 갯수
@@ -24,4 +30,11 @@ public interface SessionMapper {
 	 * @return user_id list
 	 */
 	List<Integer> getParticipants(int session_id);
+	
+	/**
+	 * session에 할당된 문제 조회
+	 * @param session_id
+	 * @return problemId list
+	 */
+	List<Integer> getSessionProblemIds(int session_id);
 }

@@ -3,6 +3,7 @@ package com.mockcote.MockCoteServer.crawler;
 import java.util.List;
 import java.util.Set;
 
+import com.mockcote.MockCoteServer.dto.CrawledRecord;
 import com.mockcote.MockCoteServer.dto.Problem;
 import com.mockcote.MockCoteServer.dto.User;
 
@@ -21,4 +22,11 @@ public interface Crawler {
 	 * @return 크롤링된 problem Dto list
 	 */
 	List<Problem> executeQuery(String query);
+	
+	/**
+	 * 해당 문제의 채점현황을 크롤링하여 각 행을 CrawledRecord 에 반환
+	 * @param problem_id
+	 * @return
+	 */
+	List<CrawledRecord> crawlTrackers(int problem_id);
 }

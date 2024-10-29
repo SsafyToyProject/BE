@@ -12,9 +12,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.mockcote.MockCoteServer.crawler.Crawler;
+import com.mockcote.MockCoteServer.dto.CrawledRecord;
 import com.mockcote.MockCoteServer.dto.Problem;
 import com.mockcote.MockCoteServer.dto.Query;
 import com.mockcote.MockCoteServer.dto.Session;
+import com.mockcote.MockCoteServer.dto.SessionTracker;
 import com.mockcote.MockCoteServer.dto.User;
 import com.mockcote.MockCoteServer.model.mapper.ProblemMapper;
 import com.mockcote.MockCoteServer.model.mapper.QueryMapper;
@@ -29,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class CrawlServiceImpl implements CrawlService {
-	
+
 	private final ProblemMapper problemMapper;
 	private final QueryMapper queryMapper;
 	private final Crawler crawler;
@@ -40,7 +42,7 @@ public class CrawlServiceImpl implements CrawlService {
 	@Override
 	public Problem searchProblemById(int problemId) {
 		Problem ret = problemMapper.searchProblemById(problemId);
-		if(ret == null) 
+		if (ret == null)
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No problem found for id : " + problemId);
 		return ret;
 	}
@@ -48,110 +50,142 @@ public class CrawlServiceImpl implements CrawlService {
 	@Transactional
 	@Override
 	public Query executeQuery(Query query) {
-		//크롤링
+		// 크롤링
 		List<Problem> crawled_problems = crawler.executeQuery(query.getQueryStr());
-		if(crawled_problems == null)
+		if (crawled_problems == null)
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Crawling error");
-		
-		//Problems table 삽입
+
+		// Problems table 삽입
 		problemMapper.insertProblems(crawled_problems);
-		
-		//queries table 삽입
+
+		// queries table 삽입
 		query.setNumProblems(crawled_problems.size());
 		query.setProblems(crawled_problems);
-		queryMapper.insertQuery(query); //queryId 할당됨
-		
-		//candidates table 삽입
+		queryMapper.insertQuery(query); // queryId 할당됨
+
+		// candidates table 삽입
 		queryMapper.insertCandidates(query);
-		
+
 		return query;
 	}
 
 	@Override
 	public List<Query> searchQueriesWithoutProblems() {
 		List<Query> list = queryMapper.searchAllWithoutProblems();
-		if(list == null)
+		if (list == null)
 			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Database error");
 		return list;
 	}
-	
+
 	@Transactional
 	@Override
 	public void triggerSession() {
-		
+
 		// find session to trigger
 		List<Session> targets = new ArrayList<>();
 		List<Session> readySessions = sessionMapper.searchReadySessions();
-		for(Session s : readySessions) {
-			if(sessionMapper.getProblemCount(s.getSessionId()) == 0) 
+		for (Session s : readySessions) {
+			if (sessionMapper.getProblemCount(s.getSessionId()) == 0)
 				targets.add(s);
 		}
-		
-		for(Session session : targets) {
-			log.info("session triggering for id : {}",session.getSessionId());
-			
-			//참가자 리스트 조회
+
+		for (Session session : targets) {
+			log.info("session triggering for id : {}", session.getSessionId());
+
+			// 참가자 리스트 조회
 			List<Integer> participant_ids = sessionMapper.getParticipants(session.getSessionId());
 			List<User> participants = userMapper.getUsersByUserIds(participant_ids);
-			if(participants.size() == 0) {
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"No participants exists for session");
+			if (participants.size() == 0) {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+						"No participants exists for session");
 			}
 			session.setSessionParticipants(participants);
-			
-			//solved 리스트 크롤링
+
+			// solved 리스트 크롤링
 			Set<Integer> solved = crawler.getSolvedProblemsByUsers(participants);
 			log.info("solved len : {}", solved.size());
-			
-			//problemPool 파싱
+
+			// problemPool 파싱
 			List<Integer> picks = parseProblemPool(session.getProblemPool());
-			
-			//problems 조회
+
+			// problems 조회
 			List<Problem> problems = queryMapper.searchCandidates(session.getQueryId());
-			
-			//unsolved problems 분류
+
+			// unsolved problems 분류
 			List<Problem> unsolved[] = new List[31];
-			for(int i = 0; i <= 30;i++) unsolved[i] = new ArrayList<>();
-			for(Problem p : problems) {
-				if(!solved.contains(p.getProblemId())) {
+			for (int i = 0; i <= 30; i++)
+				unsolved[i] = new ArrayList<>();
+			for (Problem p : problems) {
+				if (!solved.contains(p.getProblemId())) {
 					unsolved[p.getDifficulty()].add(p);
 				}
 			}
-			
-			//문제 선정
+
+			// 문제 선정
 			List<Problem> pick_problems = new ArrayList<>();
 			Random random = new Random();
-			for(int diffi : picks) {
-				while(diffi <= 30 && unsolved[diffi].size() == 0) diffi++;
-				if(diffi > 30) {
+			for (int diffi : picks) {
+				while (diffi <= 30 && unsolved[diffi].size() == 0)
+					diffi++;
+				if (diffi > 30) {
 					log.error("no problem to choose...");
 					continue;
 				}
 				Problem pick = unsolved[diffi].get(random.nextInt(unsolved[diffi].size()));
-				log.info("Pick problem {}",pick.getProblemId());
+				log.info("Pick problem {}", pick.getProblemId());
 				pick_problems.add(pick);
 				unsolved[diffi].remove(pick);
 			}
-			
-			if(pick_problems.size() == 0) {
-				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,"No Problem picked for session");
+
+			if (pick_problems.size() == 0) {
+				throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "No Problem picked for session");
 			}
 			session.setSessionProblems(pick_problems);
-			
-			//문제 리스트 등록
-			
+
+			// 문제 리스트 등록
+
 			queryMapper.insertSessionProblems(session);
-			
-			//세션 트래커 등록
+
+			// 세션 트래커 등록
 			sessionTrackerMapper.insertSessionTrackers(session);
-			
+
 			log.info("Session problem picked for session_id {}", session.getSessionId());
 		}
 	}
-	
-	
 
-	
-	
+	@Transactional
+	@Override
+	public void liveTrack() {
+		List<Session> activeSessions = sessionMapper.searchActiveSessions();
+		for(Session session : activeSessions) {
+			log.info("live tracking for session_id : {}", session.getSessionId());
+			
+			//session 정보 로드
+			List<Integer> participantsIds = sessionMapper.getParticipants(session.getSessionId());
+			List<User> users = userMapper.getUsersByUserIds(participantsIds);
+			List<Integer> sessionProblemIds = sessionMapper.getSessionProblemIds(session.getSessionId());
+			for(int problem_id : sessionProblemIds) {
+				List<CrawledRecord> result = crawler.crawlTrackers(problem_id);
+				for(CrawledRecord rec : result) {
+					for(User user : users) {
+						if(user.getHandle().equals(rec.getHandle())) {
+							//do record need update?
+							SessionTracker old = sessionTrackerMapper.findSessionTracker(session.getSessionId(), user.getUserId(), problem_id);
+							if(old.getSolvedAt() == null
+									|| rec.getPerformance() < old.getPerformance()) {
+								//update
+								SessionTracker newTracker = new SessionTracker(session.getSessionId(), user.getUserId(), problem_id, null, rec.getPerformance() ,rec.getLanguage() , null, null);
+								log.info("update session tracker {}", newTracker);
+								sessionTrackerMapper.updateSessionTracker(newTracker);
+							}
+							break;
+						}
+					}
+				}
+			}
+		}
+	}
+
 	/* helpers */
 
 	private List<Integer> parseProblemPool(String problemPool) {
@@ -184,6 +218,5 @@ public class CrawlServiceImpl implements CrawlService {
 		}
 		return pick_difficulties;
 	}
-	
 
 }

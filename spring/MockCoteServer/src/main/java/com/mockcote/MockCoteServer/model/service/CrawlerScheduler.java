@@ -13,5 +13,6 @@ public class CrawlerScheduler {
 	@Scheduled(fixedRate = 60000)
 	public void crawlAndUpdateSessions() {
 		crawlService.triggerSession();
+		crawlService.liveTrack();
 	}
 }
