@@ -38,7 +38,7 @@
 
 	<!-- ResultMap 설정 (쿼리와 문제들을 매핑) -->
 	<resultMap id="queryWithProblems"
-		type="com.mockcote.MockCoteServer.dto.Query">
+		type="query">
 		<id property="queryId" column="query_id" />
 		<result property="title" column="title" />
 		<result property="queryStr" column="query_str" />
@@ -60,8 +60,8 @@
 	<insert id="insertSessionProblems" parameterType="session">
 		INSERT INTO session_problems (session_id, problem_id)
 		VALUES
-		<foreach collection="problems" item="problemId" separator=",">
-			(#{session_id}, #{problemId})
+		<foreach collection="sessionProblems" item="problem" separator=",">
+	(#{sessionId}, #{problem.problemId})
 		</foreach>
 	</insert>
 </mapper>

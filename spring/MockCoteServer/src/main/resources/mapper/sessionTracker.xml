@@ -4,13 +4,15 @@
 <mapper
 	namespace="com.mockcote.MockCoteServer.model.mapper.SessionTrackerMapper">
 
-	<insert id="insertSessionTrackers" parameterType="session">
+	<insert id="insertSessionTrackers"
+		parameterType="com.mockcote.MockCoteServer.dto.Session">
 		INSERT INTO session_trackers (session_id, user_id, problem_id)
 		VALUES
-		<foreach collection="userIds" item="userId">
-			<foreach collection="problemIds" item="problemId"
+		<foreach collection="sessionParticipants" item="user"
+			separator=",">
+			<foreach collection="sessionProblems" item="problem"
 				separator=",">
-				(#{session_id}, #{userId}, #{problemId})
+				(#{sessionId}, #{user.userId}, #{problem.problemId})
 			</foreach>
 		</foreach>
 	</insert>

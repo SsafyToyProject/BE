@@ -16,8 +16,8 @@
    	</delete>
    	
    	<!-- user_ids에 해당하는 handles 목록 가져오기 -->
-    <select id="getHandlesByUserIds" parameterType="list" resultType="string">
-        SELECT handle
+    <select id="getUsersByUserIds" parameterType="list" resultType="user">
+        SELECT *
         FROM users
         WHERE user_id IN
         <foreach item="userId" collection="userIds" open="(" separator="," close=")">

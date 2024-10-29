@@ -15,10 +15,10 @@ public interface UserMapper {
 	int deleteUserById(int userId);
 	
 	/**
-	 * user_id 리스트를 대응하는 handles 리스트로 변환
+	 * user_id 리스트를 대응하는 User 리스트로 변환
 	 * @param userIds list
-	 * @return handles list
+	 * @return User list
 	 */
-	List<String> getHandlesByUserIds(@Param("userIds") List<Integer> userIds);
+	List<User> getUsersByUserIds(@Param("userIds") List<Integer> userIds);
 
 }
