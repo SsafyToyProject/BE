@@ -20,4 +20,5 @@
     	FROM session_participants
     	WHERE session_id = ${sessionId}
     </select>
+
 </mapper>

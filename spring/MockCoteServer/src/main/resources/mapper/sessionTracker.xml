@@ -16,5 +16,11 @@
 			</foreach>
 		</foreach>
 	</insert>
+	
+	<select id="findSessionTracker" resultType="sessionTracker">
+        SELECT session_id, user_id, problem_id, solved_at, performance, language, code_link, description
+        FROM session_trackers
+        WHERE session_id = #{sessionId} AND user_id = #{userId} AND problem_id = #{problemId}
+    </select>
 
 </mapper>
