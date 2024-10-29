@@ -3,6 +3,7 @@ package com.mockcote.MockCoteServer.controller;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -165,5 +166,34 @@ public class StudyController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+    
+    //GET: /study/user/{user-id}
+    //특정 유저가 가입한 모든 스터디 정보 리스트 조회
+    @GetMapping("/user/{user-id}")
+    public ResponseEntity<Map<String, Object>> getUserStudies(@PathVariable("user-id") int userId){
+    	List<Study> userStudies = studyService.getStudiesByUserId(userId);
+    	
+    	if (userStudies == null || userStudies.isEmpty()) {
+    		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "해당 사용자 ID로 등록된 스터디가 없습니다. "+userId);
+    	}
+    	
+    	List<Map<String, Object>> studiesInfo = userStudies.stream().map(study -> {
+    		Map<String, Object> studyInfo = new LinkedHashMap<>();
+    		studyInfo.put("study_id", study.getStudyId());
+    		studyInfo.put("name", study.getName());
+    		studyInfo.put("description", study.getDescription());
+    		studyInfo.put("code", study.getCode());
+    		return studyInfo;
+    	}).collect(Collectors.toList());
+    	
+    	Map<String, Object> response = new LinkedHashMap<>();
+    	response.put("user_id", userId);
+    	response.put("num_studies", userStudies.size());
+    	response.put("studies", studiesInfo);
+    	
+    	return ResponseEntity.ok(response);
+    }
+    
+    
     
 }
