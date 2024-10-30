@@ -31,6 +31,8 @@ public class UserServiceImpl implements UserService {
 	@Transactional
 	@Override
 	public int deleteUserById(int userId) {
+//		해당 유저가 방장인 스터디에 대한 처리 작성할 예정 (해당 스터디의 멤버가 남아있다면 방장 위임하고 탈퇴)
+		
 		int result = userMapper.deleteUserById(userId);
 //		해당 유저가 없을 때 예외 처리
         if (result == 0) {

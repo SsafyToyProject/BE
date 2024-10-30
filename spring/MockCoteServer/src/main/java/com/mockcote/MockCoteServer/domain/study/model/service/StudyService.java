@@ -3,16 +3,17 @@ package com.mockcote.MockCoteServer.domain.study.model.service;
 import java.util.List;
 import java.util.Map;
 
+import com.mockcote.MockCoteServer.domain.study.dto.CreateStudyResponse;
 import com.mockcote.MockCoteServer.domain.study.dto.Study;
 
 public interface StudyService {
 	
 	/**
      * 신규 스터디 생성
-     * @param study
-     * @return study
+     * @param CreateStudyResponse
+     * @return CreateStudyResponse
      */
-	Study addStudy(Study study);
+	CreateStudyResponse addStudy(CreateStudyResponse study);
 	
 	/**
      * 스터디ID로 스터디 정보 조회
@@ -21,13 +22,6 @@ public interface StudyService {
      */
 	Study getStudyById(int studyId);
 
-	/**
-     * 스터디ID로 스터디 멤버 리스트 조회
-     * @param studyId
-     * @return List (멤버의 id와 handle을 갖고있음)
-     */
-	List<Map<String, Object>> getUsersByStudyId(int studyId);
-	
 	/**
      * 초대코드로 스터디 정보 조회
      * @param code
@@ -63,6 +57,7 @@ public interface StudyService {
 	 * @return
 	 */
 	public List<Study> getStudiesByUserId(int userId);
+
 	
 
 }

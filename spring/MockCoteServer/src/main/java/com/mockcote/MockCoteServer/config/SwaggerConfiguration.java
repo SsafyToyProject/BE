@@ -10,7 +10,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
 //Swagger-UI 확인
-//http://localhost/swagger-ui/index.html
+//http://localhost:8080/swagger-ui/index.html
 
 @Configuration
 public class SwaggerConfiguration {
@@ -26,7 +26,10 @@ public class SwaggerConfiguration {
 		return new OpenAPI().components(new Components()).info(info);
 	}
 	
-	
+	@Bean
+	public GroupedOpenApi studyApi() {
+		return GroupedOpenApi.builder().group("ssafy-study").pathsToMatch("/study/**").build();
+	}
 
 	@Bean
 	public GroupedOpenApi userApi() {
