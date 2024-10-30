@@ -22,9 +22,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.stereotype.Component;
 
-import com.mockcote.MockCoteServer.dto.CrawledRecord;
-import com.mockcote.MockCoteServer.dto.Problem;
-import com.mockcote.MockCoteServer.dto.User;
+import com.mockcote.MockCoteServer.domain.crawl.dto.CrawledRecord;
+import com.mockcote.MockCoteServer.domain.crawl.dto.Problem;
+import com.mockcote.MockCoteServer.domain.user.dto.User;
+
 
 @Component
 public class CrawlerImpl implements Crawler {

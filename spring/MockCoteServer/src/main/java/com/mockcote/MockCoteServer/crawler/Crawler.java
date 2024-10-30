@@ -3,9 +3,9 @@ package com.mockcote.MockCoteServer.crawler;
 import java.util.List;
 import java.util.Set;
 
-import com.mockcote.MockCoteServer.dto.CrawledRecord;
-import com.mockcote.MockCoteServer.dto.Problem;
-import com.mockcote.MockCoteServer.dto.User;
+import com.mockcote.MockCoteServer.domain.crawl.dto.CrawledRecord;
+import com.mockcote.MockCoteServer.domain.crawl.dto.Problem;
+import com.mockcote.MockCoteServer.domain.user.dto.User;
 
 public interface Crawler {
 	/**

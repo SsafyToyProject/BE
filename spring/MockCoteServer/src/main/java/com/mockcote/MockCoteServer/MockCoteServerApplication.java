@@ -6,7 +6,13 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@MapperScan("com.mockcote.MockCoteServer.model.mapper")
+@MapperScan({
+    "com.mockcote.MockCoteServer.domain.crawl.model.mapper",
+    "com.mockcote.MockCoteServer.domain.tracker.model.mapper",
+    "com.mockcote.MockCoteServer.domain.user.model.mapper",
+    "com.mockcote.MockCoteServer.domain.session.model.mapper",
+    "com.mockcote.MockCoteServer.domain.study.model.mapper"
+})
 @EnableScheduling
 public class MockCoteServerApplication {
 
