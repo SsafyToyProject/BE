@@ -2,10 +2,10 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper
-	namespace="com.mockcote.MockCoteServer.model.mapper.SessionTrackerMapper">
+	namespace="com.mockcote.MockCoteServer.domain.tracker.model.mapper.SessionTrackerMapper">
 
 	<insert id="insertSessionTrackers"
-		parameterType="com.mockcote.MockCoteServer.dto.Session">
+		parameterType="com.mockcote.MockCoteServer.domain.session.dto.Session">
 		INSERT INTO session_trackers (session_id, user_id, problem_id)
 		VALUES
 		<foreach collection="sessionParticipants" item="user"
