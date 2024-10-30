@@ -2,10 +2,12 @@ package com.mockcote.MockCoteServer.domain.user.model.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.mockcote.MockCoteServer.domain.user.dto.User;
 
+@Mapper
 public interface UserMapper {
 
 //	userId로 유저 정보 요청

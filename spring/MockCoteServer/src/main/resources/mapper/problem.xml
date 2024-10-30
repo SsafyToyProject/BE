@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper
-	namespace="com.mockcote.MockCoteServer.model.mapper.ProblemMapper">
+	namespace="com.mockcote.MockCoteServer.domain.crawl.model.mapper.ProblemMapper">
 	<select id="searchProblemById" parameterType="int"
 		resultType="problem">
 		select problem_id, difficulty, title

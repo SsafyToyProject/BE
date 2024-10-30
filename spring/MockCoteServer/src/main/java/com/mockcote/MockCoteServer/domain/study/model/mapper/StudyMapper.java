@@ -2,11 +2,13 @@ package com.mockcote.MockCoteServer.domain.study.model.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.mockcote.MockCoteServer.domain.study.dto.Study;
 import com.mockcote.MockCoteServer.domain.user.dto.User;
 
+@Mapper
 public interface StudyMapper {
 
 	// 스터디 추가

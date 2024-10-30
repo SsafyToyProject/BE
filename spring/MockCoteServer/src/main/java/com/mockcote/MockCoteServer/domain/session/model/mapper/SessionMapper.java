@@ -2,8 +2,11 @@ package com.mockcote.MockCoteServer.domain.session.model.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.mockcote.MockCoteServer.domain.session.dto.Session;
 
+@Mapper
 public interface SessionMapper {
 	/**
 	 * 시작 시간이 3분 이하로 남은 세션 조회

@@ -13,14 +13,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.mockcote.MockCoteServer.domain.user.dto.User;
 import com.mockcote.MockCoteServer.domain.user.model.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
+@Tag(name = "User Controller", description = "로그인, 회원정보조회, 회원탈퇴, 로그아웃 등 을 제공하는 클래스")
 public class UserController {
 	private final UserService userService;
 	
+	@Operation(summary = "회원정보조회", description = "user_id, handle(백준아이디), level을 반환해 줍니다.")
 //	유저Id로 회원 정보 조회
 	@GetMapping("/{user_id}") //GET: /user/{user_id}
 	public ResponseEntity<Map<String, Object>> getUserById(@PathVariable int user_id) {

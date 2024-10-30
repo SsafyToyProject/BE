@@ -2,9 +2,11 @@ package com.mockcote.MockCoteServer.domain.crawl.model.mapper;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.mockcote.MockCoteServer.domain.crawl.dto.Problem;
 
-
+@Mapper
 public interface ProblemMapper {
 	
 	/**
