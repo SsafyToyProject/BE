@@ -26,6 +26,7 @@ import com.mockcote.MockCoteServer.domain.crawl.dto.CrawledRecord;
 import com.mockcote.MockCoteServer.domain.crawl.dto.Problem;
 import com.mockcote.MockCoteServer.domain.user.dto.User;
 
+
 @Component
 public class CrawlerImpl implements Crawler {
 	
