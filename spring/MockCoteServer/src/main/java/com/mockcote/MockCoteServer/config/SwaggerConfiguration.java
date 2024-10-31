@@ -10,7 +10,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 
 //Swagger-UI 확인
-//http://localhost/swagger-ui/index.html
+//http://localhost:8080/swagger-ui/index.html
 
 @Configuration
 public class SwaggerConfiguration {
@@ -18,15 +18,18 @@ public class SwaggerConfiguration {
 	@Bean
 	public OpenAPI openAPI() {
 		System.out.println("openAPI-------------");
-		Info info = new Info().title("SSAFY Board API 명세서").description(
-				"<h3>SSAFY API Reference for Developers</h3>Swagger를 이용한 Board API<br>")
+		Info info = new Info().title("MockCote API 명세서").description(
+				"<h3>MockCote API Reference for Developers</h3>MockCote API<br>")
 				.version("v1").contact(new io.swagger.v3.oas.models.info.Contact().name("hissam")
 						.email("hissam@ssafy.com").url("http://edu.ssafy.com"));
 
 		return new OpenAPI().components(new Components()).info(info);
 	}
 	
-	
+	@Bean
+	public GroupedOpenApi studyApi() {
+		return GroupedOpenApi.builder().group("ssafy-study").pathsToMatch("/study/**").build();
+	}
 
 	@Bean
 	public GroupedOpenApi userApi() {

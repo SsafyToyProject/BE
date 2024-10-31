@@ -3,15 +3,9 @@
 
 <mapper namespace="com.mockcote.MockCoteServer.domain.study.model.mapper.StudyMapper">
 	<!-- 스터디 추가 -->
-	<insert id="addStudy" parameterType="study" useGeneratedKeys="true" keyProperty="studyId">
+	<insert id="addStudy" parameterType="createStudyResponse" useGeneratedKeys="true" keyProperty="studyId">
 		insert into studies (owner_id, name, description, code)
 		values (#{ownerId}, #{name}, #{description}, #{code});
-   	</insert>
-   	
-   	<!-- 생성된 studyId로 study_members에 추가 -->
-   	<insert id="addStudyIdAndOwnerId" parameterType="map">
-   		insert into study_members (study_id, user_id)
-        values (#{studyId}, #{ownerId});
    	</insert>
    	
    	<!-- studyId로 상세 조회 -->
@@ -35,6 +29,20 @@
    		from studies
    		where code = #{code};
    	</select>
+   	
+   	<!-- userId가 방장인 스터디Id 조회 -->
+   	<select id="getStudyByOwner" parameterType="int" resultType="int">
+   		select study_id
+   		from studies
+   		where owner_id = #{userId};
+   	</select>
+   	
+   	<!-- 스터디 방장 지정 -->
+   	<update id="setStudyOwner" parameterType="map">
+   		update studies
+   		set owner_id = #{userId}
+   		where study_id = #{studyId};
+   	</update>
    	
    	<!-- studyId로 스터디 삭제 -->
    	<delete id="deleteStudyById" parameterType="int">

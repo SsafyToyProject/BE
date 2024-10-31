@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,129 +18,119 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
-import org.springframework.http.HttpStatus;
 
+import com.mockcote.MockCoteServer.domain.study.dto.CheckStudyOwnerResponse;
+import com.mockcote.MockCoteServer.domain.study.dto.CodeStudyResponse;
+import com.mockcote.MockCoteServer.domain.study.dto.CreateStudyResponse;
+import com.mockcote.MockCoteServer.domain.study.dto.DetailStudyResponse;
 import com.mockcote.MockCoteServer.domain.study.dto.Study;
 import com.mockcote.MockCoteServer.domain.study.model.service.StudyService;
 import com.mockcote.MockCoteServer.domain.user.dto.User;
 import com.mockcote.MockCoteServer.domain.user.model.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/study")
+@Tag(name = "Study Controller", description = "스터디 생성, 스터디 조회, 스터디 가입과 탈퇴 등 을 제공하는 클래스")
 public class StudyController {
 	
     private final StudyService studyService;
     private final UserService userService;    
 	
+    @Operation(summary = "스터디 생성", description = "스터디를 생성합니다.")
 //	스터디 생성
     @PostMapping // POST: /study
-    public ResponseEntity<Map<String, Object>> handleRegisterStudy(@RequestBody Map<String, String> requestBody, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<CreateStudyResponse> handleRegisterStudy(@RequestBody CreateStudyResponse study, UriComponentsBuilder uriBuilder) {
     	
-//    	요청 값 추출
-    	int ownerId = Integer.parseInt(requestBody.get("owner_id"));
-    	String name = requestBody.get("name");
-        String description = requestBody.get("description");
-    	
-// 		code 생성 (랜덤 문자열 생성)
-        String code = generateStudyCode();
-        
-//		StudyDto 생성
-        Study newStudy = new Study(-1, ownerId, name, description, code, null);
-
-// 		서비스 호출하여 스터디 등록
-        Study registeredStudy = studyService.addStudy(newStudy);
-        
         // 가입 URL 생성
         String signupUrl = uriBuilder
-            .path("/study-invite/")
-            .path(registeredStudy.getCode())
-            .build()
-            .toUriString();
-
-        // 응답 데이터 구성
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("study_id", registeredStudy.getStudyId());
-        response.put("owner_id", registeredStudy.getOwnerId());
-        response.put("name", registeredStudy.getName());
-        response.put("description", registeredStudy.getDescription());
-        response.put("code", registeredStudy.getCode());
-        response.put("signup_url", signupUrl);
+        		.path("/study-invite/")
+        		.path(study.getCode())
+        		.build()
+        		.toUriString();
+        study.setSignupUrl(signupUrl);
+        
+// 		서비스 호출하여 스터디 등록
+        CreateStudyResponse response = studyService.addStudy(study);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "스터디 정보 상세 조회", description = "study_id로 스터디의 정보를 조회합니다.")
 //	스터디 정보 상세 조회
-    @GetMapping("/{study_id}")  // GET: /study/{study_id}
-    public ResponseEntity<Map<String, Object>> getStudyDetail(@PathVariable int study_id) {
+    @GetMapping("/{study-id}")  // GET: /study/{study-id}
+    public ResponseEntity<DetailStudyResponse> getStudyDetail(@PathVariable("study-id") int studyId) {
     	
 //    	서비스 호출하여 스터디 정보 조회
-    	Study study = studyService.getStudyById(study_id);
+    	Study study = studyService.getStudyById(studyId);
     	
     	// 스터디 소유자의 handle 조회
         User owner = userService.getUserById(study.getOwnerId());  // owner의 user_id로 handle 조회
 
-        // 스터디에 속한 멤버 조회 (User 리스트로 반환)
-        List<Map<String, Object>> studyMembers = studyService.getUsersByStudyId(study_id);
-    	
 //    	응답 생성
-        Map<String, Object> response = new LinkedHashMap<>();
-        response.put("study_id", study.getStudyId());
-        response.put("owner_id", study.getOwnerId());
-        response.put("owner_handle", owner.getHandle());
-        response.put("name", study.getName());
-        response.put("description", study.getDescription());
-        response.put("code", study.getCode());
-        response.put("study_member_cnt", studyMembers.size());
-        response.put("study_member", studyMembers);
+        DetailStudyResponse response = new DetailStudyResponse(
+        		study.getStudyId(),
+        		study.getOwnerId(),
+        		owner.getHandle(),
+        		study.getName(),
+        		study.getDescription(),
+        		study.getCode(),
+        		study.getStudyMembers().size(),
+        		study.getStudyMembers()
+        		);
         
         return ResponseEntity.ok(response);
-    }
-    // 랜덤한 스터디 code를 생성하는 메서드
-    private String generateStudyCode() {
-        return Long.toHexString(Double.doubleToLongBits(Math.random()));
-    }
+    }	
     
+    @Operation(summary = "초대코드로 스터디 조회", description = "code로 스터디 정보를 조회합니다.")
 //  코드로 스터디 정보 조회
     @GetMapping("/code/{code}") // GET: /study/code/{code}
-    public ResponseEntity<Map<String, Object>> getStudyByCode(@PathVariable String code){
-//		응답 객체
-		Map<String, Object> response = new LinkedHashMap<>();
+    public ResponseEntity<CodeStudyResponse> getStudyByCode(@PathVariable String code){
 		
 //		서비스에 정보 요청
 		Study study = studyService.getStudyByCode(code);
 		String ownerHandle = userService.getUserById(study.getOwnerId()).getHandle();
 		
 //		응답 객체 생성
-		response.put("study_id", study.getStudyId());
-		response.put("owner_id", study.getOwnerId());
-		response.put("ownder_handle", ownerHandle);
-		response.put("name", study.getName());
-		response.put("description", study.getDescription());
-		response.put("code", code);
+		CodeStudyResponse response = new CodeStudyResponse(
+				study.getStudyId(),
+				study.getOwnerId(),
+				ownerHandle,
+				study.getName(),
+				study.getDescription(),
+				code
+				);
 		
     	return ResponseEntity.ok(response);
     }
     
+    @Operation(summary = "스터디 삭제", description = "study_id로 스터디를 삭제합니다.")
 //  스터디ID로 스터디 삭제
-    @DeleteMapping("/{study_id}") // DELETE: /study/{study_id}
-    public ResponseEntity<Void> deleteStudyById(@PathVariable int study_id){
+    @DeleteMapping("/{study-id}") // DELETE: /study/{study-id}
+    public ResponseEntity<Void> deleteStudyById(@PathVariable("study-id") int studyId){
 //    	서비스에 삭제 요청
-    	studyService.deleteStudyById(study_id);
+    	studyService.deleteStudyById(studyId);
     	return ResponseEntity.noContent().build();
     }
     
+    @Operation(summary = "특정 유저의 스터디 탈퇴", description = "study_id에 해당하는 스터디를 user_id를 가진 회원이 탈퇴합니다.")
 //  특정 유저의 스터디 탈퇴
-    @DeleteMapping("/user/{study_id}/{user_id}") // DELETE: /study/user/{study_id}/{user_id}
-    public ResponseEntity<Void> leaveStudyById(@PathVariable int study_id, @PathVariable int user_id){
+    @DeleteMapping("/user/{study-id}/{user-id}") // DELETE: /study/user/{study-id}/{user-id}
+    public ResponseEntity<Void> leaveStudyById(@PathVariable("study-id") int studyId, @PathVariable("user-id") int userId){
 //    	서비스에 탈퇴 요청
-    	studyService.leaveStudyById(study_id, user_id);
+    	studyService.leaveStudyById(studyId, userId);
+    	
+//    	탈퇴한 유저가 방장이라면?
+    	
     	return ResponseEntity.noContent().build();
     }
     
+    @Operation(summary = "특정 유저의 스터디 가입", description = "해당 스터디에 user가 가입합니다.")
  // POST: /study/signup
  // 특정 유저의 스터디 가입
     @PostMapping("/signup")
@@ -167,6 +158,7 @@ public class StudyController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
     
+    @Operation(summary = "특정 유저가 가입한 스터디 정보 조회", description = "유저가 가입한 스터디 정보를 조회합니다.")
     //GET: /study/user/{user-id}
     //특정 유저가 가입한 모든 스터디 정보 리스트 조회
     @GetMapping("/user/{user-id}")
@@ -194,6 +186,22 @@ public class StudyController {
     	return ResponseEntity.ok(response);
     }
     
+    @Operation(summary = "스터디장 여부 확인", description = "userId가 스터디장인 스터디가 있는지 확인")
+    //  스터디장 여부 확인
+    @GetMapping("/owner/{user-id}") // GET: /study/owner/{user-id}
+    public ResponseEntity<CheckStudyOwnerResponse> checkStudyByOwner(@PathVariable("user-id") int userId){
+    	CheckStudyOwnerResponse response = new CheckStudyOwnerResponse(
+    			studyService.checkStudyByOwner(userId)
+    			);
+    	return ResponseEntity.ok(response);
+    }
     
+    @Operation(summary = "스터디장 위임", description = "study의 owner_id를 user_id로 변경합니다.")
+    //  스터디장 위임
+    @PatchMapping("/owner") // PATCH: /study/owner
+    public ResponseEntity<Void> setStudyOwner(@RequestBody Map<String, Object> request){
+		studyService.setStudyOwner((int)request.get("study_id"), (int)request.get("user_id"));
+    	return ResponseEntity.noContent().build();
+    }
     
 }

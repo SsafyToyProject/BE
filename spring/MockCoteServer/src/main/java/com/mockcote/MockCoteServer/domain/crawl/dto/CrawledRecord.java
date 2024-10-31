@@ -9,8 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CrawledRecord {
 	private int submission_id;
-	String handle;
-	String result;
+	private String handle;
+	private String result;
 	private int performance;
 	private String language;
 }
