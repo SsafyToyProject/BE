@@ -93,31 +93,6 @@ public class StudyServiceImpl implements StudyService {
 	@Transactional
 	@Override
 	public int leaveStudyById(int studyId, int userId) {
-		
-		// 탈퇴하려는 스터디 정보
-		Study study = studyMapper.getStudyById(studyId);
-	    
-	    // 탈퇴하려는 사용자가 방장이라면
-	    if (study.getOwnerId() == userId) {
-	        // 스터디 멤버 조회
-	        List<User> members = studyMapper.getUsersByStudyId(studyId);
-	        // 남은 스터디 멤버가 있다면
-	        if (members.size() > 1) {
-	        	// 새로운 방장 지정하기
-	        	for(User member : members) {
-	        		// 방장이 아닌 사람을 방장으로 지정
-	        		if(member.getUserId() != userId) {
-	        			studyMapper.setStudyOwner(studyId, member.getUserId());
-	        			break;
-	        		}
-	        	}
-	        }
-	        // 없다면 스터디 삭제하기
-	        else {
-	        	studyMapper.deleteStudyById(studyId);
-	        }
-	    }
-		
 	    // 탈퇴하기
 		int cnt = studyMapper.leaveStudyById(studyId, userId);
 		// 탈퇴한 스터디가 없을 때
@@ -152,6 +127,25 @@ public class StudyServiceImpl implements StudyService {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No studies found for user ID: " + userId);
 		}
 		return studies;
+	}
+
+	// 스터디장 확인
+	@Override
+	public boolean checkStudyByOwner(int userId) {
+//		userId가 스터디장인 스터디 조회하기
+		List<Integer> list = studyMapper.getStudyByOwner(userId);
+//		있다면 true
+		if(!list.isEmpty()) return true;
+//		없으면 false
+		return false;
+	}
+	
+	// 스터디 방장 위임
+	@Transactional
+	@Override
+	public int setStudyOwner(int studyId, int userId) {
+		int cnt = studyMapper.setStudyOwner(studyId, userId);
+		return cnt;
 	}
 
 	// 랜덤한 스터디 code를 생성하는 메서드

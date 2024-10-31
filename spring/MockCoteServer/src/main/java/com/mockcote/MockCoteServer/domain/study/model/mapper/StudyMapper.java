@@ -24,6 +24,9 @@ public interface StudyMapper {
 	//	code로 스터디 정보 조회
 	Study getStudyByCode(String code);
 
+	// userId가 방장인 스터디 리스트 조회
+	List<Integer> getStudyByOwner(int userId);
+	
 	// 스터디 방장 지정
 	int setStudyOwner(@Param("studyId") int studyId, @Param("userId") int userId);
 	

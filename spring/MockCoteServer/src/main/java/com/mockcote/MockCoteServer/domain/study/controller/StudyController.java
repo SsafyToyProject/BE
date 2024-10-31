@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import com.mockcote.MockCoteServer.domain.study.dto.CheckStudyOwnerResponse;
 import com.mockcote.MockCoteServer.domain.study.dto.CodeStudyResponse;
 import com.mockcote.MockCoteServer.domain.study.dto.CreateStudyResponse;
 import com.mockcote.MockCoteServer.domain.study.dto.DetailStudyResponse;
@@ -184,6 +186,22 @@ public class StudyController {
     	return ResponseEntity.ok(response);
     }
     
+    @Operation(summary = "스터디장 여부 확인", description = "userId가 스터디장인 스터디가 있는지 확인")
+    //  스터디장 여부 확인
+    @GetMapping("/owner/{user-id}") // GET: /study/owner/{user-id}
+    public ResponseEntity<CheckStudyOwnerResponse> checkStudyByOwner(@PathVariable("user-id") int userId){
+    	CheckStudyOwnerResponse response = new CheckStudyOwnerResponse(
+    			studyService.checkStudyByOwner(userId)
+    			);
+    	return ResponseEntity.ok(response);
+    }
     
+    @Operation(summary = "스터디장 위임", description = "study의 owner_id를 user_id로 변경합니다.")
+    //  스터디장 위임
+    @PatchMapping("/owner") // PATCH: /study/owner
+    public ResponseEntity<Void> setStudyOwner(@RequestBody Map<String, Object> request){
+		studyService.setStudyOwner((int)request.get("study_id"), (int)request.get("user_id"));
+    	return ResponseEntity.noContent().build();
+    }
     
 }

@@ -1,7 +1,6 @@
 package com.mockcote.MockCoteServer.domain.study.model.service;
 
 import java.util.List;
-import java.util.Map;
 
 import com.mockcote.MockCoteServer.domain.study.dto.CreateStudyResponse;
 import com.mockcote.MockCoteServer.domain.study.dto.Study;
@@ -56,8 +55,20 @@ public interface StudyService {
 	 * @param userId
 	 * @return
 	 */
-	public List<Study> getStudiesByUserId(int userId);
+	List<Study> getStudiesByUserId(int userId);
 
+	/**
+	 * 자신이 스터디장인 스터디가 있는지 확인
+	 * @param userId
+	 * @return boolean
+	 */
+	boolean checkStudyByOwner(int userId);
 	
-
+	/**
+	 * 스터디장을 userId로 변경
+	 * @param studyId
+	 * @param userId
+	 * @return int
+	 */
+	int setStudyOwner(int studyId, int userId);
 }

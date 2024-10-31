@@ -30,6 +30,13 @@
    		where code = #{code};
    	</select>
    	
+   	<!-- userId가 방장인 스터디Id 조회 -->
+   	<select id="getStudyByOwner" parameterType="int" resultType="int">
+   		select study_id
+   		from studies
+   		where owner_id = #{userId};
+   	</select>
+   	
    	<!-- 스터디 방장 지정 -->
    	<update id="setStudyOwner" parameterType="map">
    		update studies
