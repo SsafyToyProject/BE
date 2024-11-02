@@ -28,14 +28,27 @@ public class SwaggerConfiguration {
 	
 	@Bean
 	public GroupedOpenApi studyApi() {
-		return GroupedOpenApi.builder().group("ssafy-study").pathsToMatch("/study/**").build();
+		return GroupedOpenApi.builder().group("mockcote").pathsToMatch("/study/**","/user/**","/session/**", "/tracker/**","/crawl/**").build();
 	}
 
-	@Bean
-	public GroupedOpenApi userApi() {
-		return GroupedOpenApi.builder().group("ssafy-user").pathsToMatch("/user/**").build();
-	}
-	
-	
+//	@Bean
+//	public GroupedOpenApi userApi() {
+//		return GroupedOpenApi.builder().group("ssafy-user").pathsToMatch("/user/**").build();
+//	}
+//	
+//	@Bean
+//	public GroupedOpenApi sessionApi() {
+//		return GroupedOpenApi.builder().group("ssafy-session").pathsToMatch("/session/**").build();
+//	}
+//	
+//	@Bean
+//	public GroupedOpenApi trackerApi() {
+//		return GroupedOpenApi.builder().group("ssafy-tracker").pathsToMatch("/tracker/**").build();
+//	}
+//	
+//	@Bean
+//	public GroupedOpenApi crawlApi() {
+//		return GroupedOpenApi.builder().group("ssafy-crawl").pathsToMatch("/crawl/**").build();
+//	}
 
 }
