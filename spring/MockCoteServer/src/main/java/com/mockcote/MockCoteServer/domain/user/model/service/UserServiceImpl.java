@@ -1,6 +1,7 @@
 package com.mockcote.MockCoteServer.domain.user.model.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -17,6 +18,7 @@ public class UserServiceImpl implements UserService {
 
 	private final UserMapper userMapper;
 	private final JwtUtil jwtUtil;
+	private final PasswordEncoder passwordEncoder;
 	
 //	userId로 유저 정보 받아오기
 	@Override
@@ -44,7 +46,9 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	@Transactional
     public User registerUser(User user) {
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insertUser(user);  // insertUser 메서드를 UserMapper에 추가해야 함
         return user;
     }

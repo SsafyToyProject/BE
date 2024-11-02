@@ -69,4 +69,20 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 	
+	@Operation(summary = "회원가입", description = "새로운 사용자를 등록하고 JWT 토큰을 발급합니다.")
+	@PostMapping()
+    public ResponseEntity<AuthenticationResponse> register(@RequestBody User user) {
+        User newUser = userService.registerUser(user);
+        String token = jwtUtil.generateToken(newUser.getHandle());
+
+        AuthenticationResponse response = new AuthenticationResponse(
+                newUser.getUserId(),
+                newUser.getHandle(),
+                newUser.getLevel(),
+                token
+        );
+        return ResponseEntity.ok(response);
+    }
+
+	
 }

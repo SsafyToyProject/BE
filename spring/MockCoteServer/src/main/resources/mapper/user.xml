@@ -26,7 +26,7 @@
     </select>
     
     <!-- 유저 정보 삽입 (회원가입) -->
-    <insert id="insertUser" parameterType="user">
+    <insert id="insertUser" parameterType="user" useGeneratedKeys="true" keyProperty="userId">
         INSERT INTO users (handle, password, level)
         VALUES (#{handle}, #{password}, #{level})
     </insert>

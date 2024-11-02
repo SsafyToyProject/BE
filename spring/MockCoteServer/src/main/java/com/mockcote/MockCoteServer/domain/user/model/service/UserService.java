@@ -38,4 +38,5 @@ public interface UserService {
 	 * @return
 	 */
 	String generateToken(User user);
+	
 }
