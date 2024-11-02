@@ -53,12 +53,14 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Override
+	@Override
     public User authenticateUser(String handle, String password) {
         User user = userMapper.getUserByHandle(handle);
-        if (user == null || !user.getPassword().equals(password)) {
+        
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         }
+        
         return user;
     }
     
