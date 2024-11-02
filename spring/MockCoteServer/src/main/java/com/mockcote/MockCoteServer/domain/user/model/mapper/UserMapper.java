@@ -22,5 +22,18 @@ public interface UserMapper {
 	 * @return User list
 	 */
 	List<User> getUsersByUserIds(@Param("userIds") List<Integer> userIds);
-
+	
+	/**
+	 * user 정보 삽입
+	 * @param user
+	 * @return
+	 */
+	int insertUser(User user);
+	
+	/**
+	 * handle(백준 ID)로 유저 정보 가져오기
+	 * @param handle
+	 * @return
+	 */
+	User getUserByHandle(String handle);
 }

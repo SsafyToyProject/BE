@@ -1,10 +1,12 @@
 package com.mockcote.MockCoteServer.domain.user.model.service;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.mockcote.MockCoteServer.config.JwtUtil;
 import com.mockcote.MockCoteServer.domain.user.dto.User;
 import com.mockcote.MockCoteServer.domain.user.model.mapper.UserMapper;
 
@@ -15,6 +17,8 @@ import lombok.RequiredArgsConstructor;
 public class UserServiceImpl implements UserService {
 
 	private final UserMapper userMapper;
+	private final JwtUtil jwtUtil;
+	private final PasswordEncoder passwordEncoder;
 	
 //	userId로 유저 정보 받아오기
 	@Override
@@ -40,5 +44,29 @@ public class UserServiceImpl implements UserService {
         }
         return result;
 	}
+
+	@Override
+	@Transactional
+    public User registerUser(User user) {
+		user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userMapper.insertUser(user);  // insertUser 메서드를 UserMapper에 추가해야 함
+        return user;
+    }
+
+	@Override
+    public User authenticateUser(String handle, String password) {
+        User user = userMapper.getUserByHandle(handle);
+        
+        if (user == null || !passwordEncoder.matches(password, user.getPassword())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+        
+        return user;
+    }
+    
+    @Override
+    public String generateToken(User user) {
+        return jwtUtil.generateToken(user.getHandle());
+    }
 
 }
