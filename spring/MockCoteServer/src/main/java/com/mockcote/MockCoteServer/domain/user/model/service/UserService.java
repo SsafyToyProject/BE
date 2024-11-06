@@ -33,10 +33,37 @@ public interface UserService {
 	User authenticateUser(String handle, String password);
 	
 	/**
-	 * user의 JWT 토큰 생성하기
+	 * 액세스 토큰 생성
 	 * @param user
 	 * @return
 	 */
-	String generateToken(User user);
+	String generateAccessToken(User user);
+	
+	/**
+	 * 리프레시 토큰 생성
+	 * @param user
+	 * @return
+	 */
+    String generateRefreshToken(User user);
+    
+    /**
+     * 리프레시 토큰 저장
+     * @param userId
+     * @param refreshToken
+     */
+    void saveRefreshToken(int userId, String refreshToken);
+    
+    /**
+     * 액세스 토큰 재발급
+     * @param refreshToken
+     * @return
+     */
+    String refreshAccessToken(String refreshToken);
+    
+    /**
+     * 리프레시 토큰 삭제 
+     * @param userId
+     */
+    void deleteRefreshTokenByUserId(int userId);
 	
 }

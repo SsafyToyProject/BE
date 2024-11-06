@@ -36,4 +36,24 @@ public interface UserMapper {
 	 * @return
 	 */
 	User getUserByHandle(String handle);
+	
+	/**
+	 * 리프레시 토큰 저장
+	 * @param userId
+	 * @param refreshToken
+	 */
+    void insertRefreshToken(@Param("userId") int userId, @Param("refreshToken") String refreshToken);
+
+    /**
+     * refresh토큰 가져오기
+     * @param userId
+     * @return
+     */
+    String getRefreshTokenByUserId(@Param("userId") int userId);
+
+    /**
+     * 리프레시 토큰 삭제
+     * @param userId
+     */
+    void deleteRefreshTokenByUserId(@Param("userId") int userId);
 }

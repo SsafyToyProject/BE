@@ -11,5 +11,10 @@ public class AuthenticationResponse {
     private int userId;
     private String handle;
     private int level;
-    private String token;
+    private String accessToken;
+    private String refreshToken;
+
+    public AuthenticationResponse(String accessToken) {
+        this.accessToken = accessToken;
+    }
 }
