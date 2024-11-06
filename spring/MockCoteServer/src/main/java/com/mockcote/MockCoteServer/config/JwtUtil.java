@@ -3,6 +3,7 @@ package com.mockcote.MockCoteServer.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -19,14 +20,15 @@ public class JwtUtil {
         this.secretKey = Keys.hmacShaKeyFor(secretKey.getBytes());  // 키 객체 생성
     }
 
-    public String generateToken(String handle) {
+    public String generateToken(String handle, long expiration) {
         return Jwts.builder()
                 .setSubject(handle)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 10)) // 10시간 유효
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(secretKey, SignatureAlgorithm.HS256)
                 .compact();
     }
+
 
     public String extractHandle(String token) {
         return Jwts.parserBuilder()
@@ -50,4 +52,13 @@ public class JwtUtil {
                 .getExpiration()
                 .before(new Date());
     }
+    
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(secretKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
+
 }

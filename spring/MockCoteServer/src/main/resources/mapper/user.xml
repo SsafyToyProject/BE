@@ -35,4 +35,17 @@
     <select id="getUserByHandle" parameterType="string" resultType="user">
         SELECT * FROM users WHERE handle = #{handle}
     </select>
+    
+    <insert id="insertRefreshToken">
+    INSERT INTO refresh_tokens (user_id, refresh_token) VALUES (#{userId}, #{refreshToken})
+</insert>
+
+<select id="getRefreshTokenByUserId" resultType="string">
+	SELECT refresh_token FROM refresh_tokens WHERE user_id = #{userId}
+</select>
+
+<delete id="deleteRefreshTokenByUserId">
+    DELETE FROM refresh_tokens WHERE user_id = #{userId}
+</delete>
+    
 </mapper>

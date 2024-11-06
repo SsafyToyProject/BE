@@ -37,6 +37,8 @@ public class UserServiceImpl implements UserService {
 	public int deleteUserById(int userId) {
 //		해당 유저가 방장인 스터디에 대한 처리 작성할 예정 (해당 스터디의 멤버가 남아있다면 방장 위임하고 탈퇴)
 		
+		deleteRefreshTokenByUserId(userId);
+		
 		int result = userMapper.deleteUserById(userId);
 //		해당 유저가 없을 때 예외 처리
         if (result == 0) {
@@ -64,9 +66,36 @@ public class UserServiceImpl implements UserService {
         return user;
     }
     
+	@Override
+    public String generateAccessToken(User user) {
+        return jwtUtil.generateToken(user.getHandle(), 10 * 60 * 1000); // 예: 10분 유효
+    }
+
+
     @Override
-    public String generateToken(User user) {
-        return jwtUtil.generateToken(user.getHandle());
+    public String generateRefreshToken(User user) {
+        return jwtUtil.generateToken(user.getHandle(), 7 * 24 * 60 * 60 * 1000); // 예: 7일 유효
+    }
+
+    @Transactional
+    @Override
+    public void saveRefreshToken(int userId, String refreshToken) {
+        userMapper.insertRefreshToken(userId, refreshToken);
+    }
+
+    @Override
+    public String refreshAccessToken(String refreshToken) {
+        if (!jwtUtil.isTokenValid(refreshToken)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token");
+        }
+        String handle = jwtUtil.extractHandle(refreshToken);
+        User user = userMapper.getUserByHandle(handle);
+        return generateAccessToken(user);
+    }
+    
+    @Override
+    public void deleteRefreshTokenByUserId(int userId) {
+        userMapper.deleteRefreshTokenByUserId(userId);
     }
 
 }
